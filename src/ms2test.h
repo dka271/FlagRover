@@ -1,0 +1,67 @@
+/* ************************************************************************** */
+/** Descriptive File Name
+
+  @Company
+    Company Name
+
+  @File Name
+    filename.h
+
+  @Summary
+    Brief description of the file.
+
+  @Description
+    Describe the purpose of this file.
+ */
+/* ************************************************************************** */
+
+#ifndef _MS2TEST_H    /* Guard against multiple inclusion */
+#define _MS2TEST_H
+
+
+/* ************************************************************************** */
+/* ************************************************************************** */
+/* Section: Included Files                                                    */
+/* ************************************************************************** */
+/* ************************************************************************** */
+
+/* This section lists the other files that are included in this file.
+ */
+#include "communication.h"
+#include "communication_public.h"
+#include "navigation_public.h"
+#include "debug.h"
+/* TODO:  Include other files here if needed. */
+//#define UNIT_TESTING true
+#define UNIT_TESTING false
+#define TEST_SPEED_TICKS 62
+#define TEST_SPEED_DURATION 20
+#define TEST_SPEED_IGNORE 10
+
+void automatedTesting();
+int commChecksumTest();
+int navChecksumTest();
+int commQueueTest();
+void commQueueReceiveTest(unsigned char msg[COMM_QUEUE_BUFFER_SIZE]);
+int navQueueTest();
+void navQueueReceiveTest(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
+void encoderSpeedTest(int speed);
+
+
+/* Provide C++ Compatibility */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
+
+    /* Provide C++ Compatibility */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _EXAMPLE_FILE_NAME_H */
+
+/* *****************************************************************************
+ End of File
+ */

@@ -833,9 +833,9 @@ build/milestone1/production/_ext/1360937237/app.o:  \
  ../../../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_p32mx795f512l.h  \
  ../src/motor.h  \
 ../src/pathfinding.h  \
-../src/communication.h  \
- ../src/myjson.h  \
 ../src/communication_public.h  \
+ ../src/communication.h  \
+../src/myjson.h  \
 ../src/flagcapture.h  \
  ../src/pathfinding_public.h  \
 ../src/ms2test.h  \

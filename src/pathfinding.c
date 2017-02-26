@@ -189,9 +189,6 @@ void PATHFINDING_Tasks ( void )
                 
                 //Handle the message
                 if(receiveCheck == pdTRUE){
-                    //Convert the message into integer format
-                    unsigned int receivemsgint0 = receivemsg[0] | (receivemsg[1] << 8) | (receivemsg[2] << 16) | (receivemsg[3] << 24);
-                    unsigned int receivemsgint1 = receivemsg[4] | (receivemsg[5] << 8) | (receivemsg[6] << 16) | (receivemsg[7] << 24);
                     //Get the message ID
                     int msgId = (receivemsg[PATH_SOURCE_ID_IDX] & PATH_SOURCE_ID_MASK) >> PATH_SOURCE_ID_OFFSET;
                     //Handle a specific message

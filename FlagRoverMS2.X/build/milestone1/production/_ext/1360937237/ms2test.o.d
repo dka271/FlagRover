@@ -834,9 +834,9 @@ build/milestone1/production/_ext/1360937237/ms2test.o:  \
  ../src/motor.h  \
 ../src/navigation.h  \
 ../src/pathfinding.h  \
- ../src/communication.h  \
-../src/flagcapture.h  \
+ ../src/communication_public.h  \
+../src/communication.h  \
+ ../src/flagcapture.h  \
 ../src/pathfinding_public.h  \
- ../src/myjson.h  \
-../src/communication_public.h  \
-../src/navigation_public.h 
+../src/myjson.h  \
+ ../src/navigation_public.h 

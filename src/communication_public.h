@@ -37,8 +37,9 @@ extern "C" {
 #endif
     
 #define COMM_UART_ID 0
-#define COMM_PATHFINDING_ID 1
+#define COMM_MAPPING_ID 1
 #define COMM_SEND_ID 2
+#define COMM_OTHER_ID 3
 
 #define SEND_QUEUE_BUFFER_SIZE 216 
 #define RECEIVE_BUFFER_SIZE 216 
@@ -68,7 +69,7 @@ void readPublic2(char* bufferToWriteTo, int size);
 int readPublicIntoBuffer2(char bufferToWriteTo[COMM_QUEUE_BUFFER_SIZE]);
 void writePublic(char* bufferToReadFrom);
 void uartReceiveFromSendQueueInISR(unsigned char msg[SEND_QUEUE_BUFFER_SIZE]);
-
+void constructFieldItem(fieldItem *object, unsigned char objectType, unsigned char versionNum, unsigned char length, unsigned char width, unsigned char centerX, unsigned char centerY, unsigned char orientation);
 
 
     /* Provide C++ Compatibility */

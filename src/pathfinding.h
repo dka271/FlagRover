@@ -68,6 +68,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system/msg/sys_msg.h"
 #include "debug.h"
 #include "motor.h"
+#include "communication_public.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -127,6 +128,22 @@ typedef struct
 
 } PATHFINDING_DATA;
 
+typedef struct {
+	unsigned char x;
+	unsigned char y;
+} point;
+
+typedef struct {
+	point topLeft;
+	point bottomRight;
+} crossSquare;
+
+typedef struct {
+	point nodes[120];
+	unsigned char edges[120][80];
+} adjacencyList;
+
+fieldItem fieldItemArray[30];
 
 // *****************************************************************************
 // *****************************************************************************
@@ -220,4 +237,7 @@ void PATHFINDING_Tasks( void );
 /*******************************************************************************
  End of File
  */
+
+
+
 

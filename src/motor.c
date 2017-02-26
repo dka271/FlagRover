@@ -131,7 +131,9 @@ int PID1(unsigned int setpoint, unsigned int actual){
     out = (int) out / PIDDiv;
     //out += PIDOffset;
     */
-    if (error > 0){
+    if (setpoint <= 0){
+        PID1_Out = PID1_Out >> 1;
+    }else if (error > 0){
         PID1_Out++;
     }else{
         PID1_Out--;
@@ -167,7 +169,9 @@ int PID2(unsigned int setpoint, unsigned int actual){
     out = (int) out / PIDDiv;
     */
     //out += PIDOffset;
-    if (error > 0){
+    if (setpoint <= 0){
+        PID2_Out = PID2_Out >> 1;
+    }else if (error > 0){
         PID2_Out++;
     }else{
         PID2_Out--;

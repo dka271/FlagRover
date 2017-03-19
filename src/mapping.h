@@ -5,7 +5,7 @@
     Microchip Technology Inc.
 
   File Name:
-    pathfinding.h
+    mapping.h
 
   Summary:
     This header file provides prototypes and definitions for the application.
@@ -43,8 +43,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
  *******************************************************************************/
 //DOM-IGNORE-END
 
-#ifndef _PATHFINDING_H
-#define _PATHFINDING_H
+#ifndef _MAPPING_H
+#define _MAPPING_H
 
 // *****************************************************************************
 // *****************************************************************************
@@ -56,21 +56,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
-#include <math.h>
 #include "system_config.h"
 #include "system_definitions.h"
-#include "system/system.h"
-#include "system/clk/sys_clk.h"
-#include "driver/usart/drv_usart.h"
-#include "system/devcon/sys_devcon.h"
-#include <sys/appio.h>
-#include <GenericTypeDefs.h>
-#include "system/common/sys_module.h"
-#include "system/msg/sys_msg.h"
-#include "debug.h"
-#include "motor.h"
-#include "communication_public.h"
-#include "pathfinding_public.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -78,10 +65,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 extern "C" {
 
 #endif
-    
-    
-
-
 // DOM-IGNORE-END 
 
 // *****************************************************************************
@@ -104,12 +87,12 @@ extern "C" {
 typedef enum
 {
 	/* Application's state machine's initial state. */
-	PATHFINDING_STATE_INIT=0,
-	PATHFINDING_STATE_SERVICE_TASKS,
+	MAPPING_STATE_INIT=0,
+	MAPPING_STATE_SERVICE_TASKS,
 
 	/* TODO: Define states used by the application state machine. */
 
-} PATHFINDING_STATES;
+} MAPPING_STATES;
 
 
 // *****************************************************************************
@@ -128,32 +111,12 @@ typedef enum
 typedef struct
 {
     /* The application's current state */
-    PATHFINDING_STATES state;
+    MAPPING_STATES state;
 
     /* TODO: Define any additional data used by the application. */
 
-} PATHFINDING_DATA;
+} MAPPING_DATA;
 
-
-
-typedef struct {
-	point topLeft;
-	point bottomRight;
-} crossSquare;
-
-typedef struct {
-	point nodes[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES];
-	unsigned char edges[MAXIMUM_NUMBER_OF_NODES][MAXIMUM_NUMBER_OF_IN_SIGHT_NODES];
-} adjacencyList;
-
-typedef struct {
-    unsigned char node;
-    unsigned short gScore;
-    unsigned short hScore;
-    int fScore;
-} pathFindingNode;
-
-//fieldItem fieldItemArray[MAXIMUM_NUMBER_OF_OBSTACLES];
 
 // *****************************************************************************
 // *****************************************************************************
@@ -171,7 +134,7 @@ typedef struct {
 
 /*******************************************************************************
   Function:
-    void PATHFINDING_Initialize ( void )
+    void MAPPING_Initialize ( void )
 
   Summary:
      MPLAB Harmony application initialization routine.
@@ -193,64 +156,19 @@ typedef struct {
 
   Example:
     <code>
-    PATHFINDING_Initialize();
+    MAPPING_Initialize();
     </code>
 
   Remarks:
     This routine must be called from the SYS_Initialize function.
 */
 
-void PATHFINDING_Initialize ( void );
-    
-void storeInFieldItemStack(fieldItem tempFieldItem);
-crossSquare convertPointsToCrossSquare(point topLeft, point bottomRight);
-point convertXAndYToPoint(unsigned char x, unsigned char y);
-crossSquare convertFieldItemToCrossSquare(fieldItem tempFieldItem);
-int checkIfObjectInStack(unsigned char objectType);
-void calculateAdjacencyList();
-void clearAdjacencyList();
-void calculateOffsetNodes(fieldItem tempFieldItem);
-void createAdjacencyEdges();
-bool checkIntersectionOfTwoLines(point line1Point1, point line1Point2, point line2Point1, point line2Point2);
-bool checkIfNodeValid(point tempPoint);
-bool checkIfPointWithinFieldItem(point pointToCheck, fieldItem tempFieldItem);
-bool checkIfTwoNodesInSightOfEachOther(point point1, point point2);
-unsigned char getMax(unsigned char num1, unsigned char num2);
-unsigned char getMin(unsigned char num1, unsigned char num2);
-bool onSegment(point p, point q, point r);
-int orientation(point p, point q, point r);
-bool checkIntersectionOfTwoLines(point p1, point q1, point p2, point q2);
-bool checkIntersectionOfLineAndCrossSquare(point p1, point q1, point p2, point q2);
-void testingSendOutEdgesOverWifly();
-unsigned char calculatePath();
-void AStar(point* path, unsigned char start, unsigned char goal);
-unsigned short calculateSquaredEuclideanDistance(point startingPoint, point endingPoint);
-int squareFunction(int num);
-pathFindingNode getLowestFScoreNode();
-void constructPath(unsigned char node);
-void removeNodeFromList(pathFindingNode node);
-void addNodeToList(unsigned char node);
-unsigned char getNumberOfNeighborsOfNode(unsigned char node);
-bool isListNotEmpty();
-bool isNodeInList(unsigned char node);
-pathFindingNode getPathFindingNodeFromList(unsigned char node);
-void setPathFindingNodeInList(unsigned char startingPoint, unsigned char newNode);
-bool checkIfPathFindingNodeExists(unsigned char node);
-unsigned char monotonicAStar(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES], unsigned char start, unsigned char goal);
-void clearAStarLists(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]);
-unsigned short calculateEuclideanDistance(unsigned char starting, unsigned char ending);
-bool isNodeInOpenSet(unsigned char node);
-bool isNodeInClosedSet(unsigned char node);
-bool isUnsortedOpenSetEmpty();
-unsigned char getLowestFScore();
-void removeFromOpenSet(unsigned char current);
-void addToOpenSet(unsigned char current);
-void reconstructPath(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES], unsigned char current);
-bool isClosedSetEmpty();
+void MAPPING_Initialize ( void );
+
 
 /*******************************************************************************
   Function:
-    void PATHFINDING_Tasks ( void )
+    void MAPPING_Tasks ( void )
 
   Summary:
     MPLAB Harmony Demo application tasks function
@@ -271,17 +189,17 @@ bool isClosedSetEmpty();
 
   Example:
     <code>
-    PATHFINDING_Tasks();
+    MAPPING_Tasks();
     </code>
 
   Remarks:
     This routine must be called from SYS_Tasks() routine.
  */
 
-void PATHFINDING_Tasks( void );
+void MAPPING_Tasks( void );
 
 
-#endif /* _PATHFINDING_H */
+#endif /* _MAPPING_H */
 
 //DOM-IGNORE-BEGIN
 #ifdef __cplusplus
@@ -292,7 +210,4 @@ void PATHFINDING_Tasks( void );
 /*******************************************************************************
  End of File
  */
-
-
-
 

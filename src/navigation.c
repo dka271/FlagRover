@@ -104,7 +104,7 @@ void NAVIGATION_Tasks ( void )
     unsigned int previousValue2 = 0;
     unsigned int speed2;
     unsigned int pwmCount = 0;
-    unsigned int desiredSpeed = 50;
+    unsigned int desiredSpeed = 0;
     int m1PID;
     int m2PID;
     Motor1SetPWM(0);

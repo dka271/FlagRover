@@ -1,6 +1,6 @@
-build/milestone1/production/_ext/1360937237/app.o:  \
-../src/app.c  \
- ../src/app.h  \
+build/milestone1/production/_ext/1360937237/mapping.o:  \
+../src/mapping.c  \
+ ../src/mapping.h  \
 ../src/system_config/milestone1/system_config.h  \
  ../src/system_config/milestone1/system_definitions.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/common/sys_common.h  \
@@ -260,7 +260,6 @@ build/milestone1/production/_ext/1360937237/app.o:  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/ports/processor/../templates/ports_ChangeNoticeEdgeControl_Unsupported.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/ports/processor/../templates/ports_ChangeNoticeEdgeStatus_Unsupported.h  \
  ../src/app.h  \
-../src/navigation.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/msg/sys_msg.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/msg/config/sys_msg_config.h  \
  ../src/debug.h  \
@@ -832,13 +831,13 @@ build/milestone1/production/_ext/1360937237/app.o:  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_p32xxxx.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_p32mx795f512l.h  \
  ../src/motor.h  \
-../src/pathfinding.h  \
-../src/communication_public.h  \
- ../src/pathfinding_public.h  \
-../src/communication.h  \
-../src/myjson.h  \
- ../src/flagcapture.h  \
 ../src/ms2test.h  \
 ../src/communication.h  \
- ../src/navigation_public.h  \
-../src/app_public.h 
+../src/myjson.h  \
+ ../src/communication_public.h  \
+../src/navigation_public.h  \
+ ../src/navigation.h  \
+../src/pathfinding.h  \
+../src/pathfinding_public.h  \
+ ../src/communication.h  \
+../src/flagcapture.h 

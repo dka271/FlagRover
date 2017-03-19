@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<configuration version="1.0.10.0">
+<configuration version="1.0.9.2">
   <DisplayManager>
     <SystemInitScript/>
     <SystemStartScript/>
@@ -348,7 +348,7 @@
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/milestone1</Path>
         <Checksum>1B698989D98FE64BCC785AA1BF47AA74</Checksum>
-        <ProjectFileChecksum>BF4578A9B7416F488BAC5FFF0B63E61C</ProjectFileChecksum>
+        <ProjectFileChecksum>760F9DBAD0942E5B9C9269318C388F09</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_interrupt_a.S</Name>
@@ -390,24 +390,24 @@
     </Templates>
     <CompilerItems>
       <C32-AS>
-        <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
-        <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/include"/>
+        <Include value="../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
+        <Include value="../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/include"/>
         <Include value="../src/system_config/milestone1"/>
       </C32-AS>
       <C32>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverMS2\firmware\src"/>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverMS2\firmware\src\system_config\milestone1"/>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverMS2\firmware\src\milestone1"/>
+        <Include value="C:\Users\Daniel\Desktop\FlagRoverMS2\firmware\src"/>
+        <Include value="C:\Users\Daniel\Desktop\FlagRoverMS2\firmware\src\system_config\milestone1"/>
+        <Include value="C:\Users\Daniel\Desktop\FlagRoverMS2\firmware\src\milestone1"/>
         <Include value="C:\microchip\harmony\v1_09\framework"/>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverMS2\firmware\src\system_config\milestone1\framework"/>
-        <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
-        <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/include"/>
+        <Include value="C:\Users\Daniel\Desktop\FlagRoverMS2\firmware\src\system_config\milestone1\framework"/>
+        <Include value="../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
+        <Include value="../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/include"/>
         <Include value="../src/system_config/milestone1"/>
         <Define value="__XC"/>
       </C32>
     </CompilerItems>
     <Libraries>
-      <Library value="../../../../../../../microchip/harmony/v1_09/bin/framework/peripheral/PIC32MX795F512L_peripherals.a"/>
+      <Library value="../../../../../../microchip/harmony/v1_09/bin/framework/peripheral/PIC32MX795F512L_peripherals.a"/>
     </Libraries>
   </Manifest>
 </configuration>

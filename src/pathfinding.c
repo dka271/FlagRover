@@ -75,11 +75,25 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
     This structure should be initialized by the APP_Initialize function.
     
     Application strings and buffers are be defined outside this structure.
-*/
+ */
 
 PATHFINDING_DATA pathfindingData;
 
 static QueueHandle_t pathQueue;
+fieldItem fieldItemStack[MAXIMUM_NUMBER_OF_OBSTACLES];
+crossSquare crossSquareStack[MAXIMUM_NUMBER_OF_OBSTACLES];
+unsigned char fieldItemStackTop = 0;
+unsigned char crossSquareStackTop = 0;
+adjacencyList halfHeartedAdjacencyList;
+int currentNumberOfNodes = 2;
+pathFindingNode pathFindingNodeList[MAXIMUM_NUMBER_OF_NODES];
+unsigned char closedSet[MAXIMUM_NUMBER_OF_NODES];
+unsigned char openSet[MAXIMUM_NUMBER_OF_NODES];
+unsigned char openSetTop = 0;
+unsigned short gScoreArray[MAXIMUM_NUMBER_OF_NODES];
+unsigned short fScoreArray[MAXIMUM_NUMBER_OF_NODES];
+unsigned char cameFrom[MAXIMUM_NUMBER_OF_NODES];
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -88,7 +102,7 @@ static QueueHandle_t pathQueue;
 // *****************************************************************************
 
 /* TODO:  Add any necessary callback functions.
-*/
+ */
 
 // *****************************************************************************
 // *****************************************************************************
@@ -98,7 +112,7 @@ static QueueHandle_t pathQueue;
 
 
 /* TODO:  Add any necessary local functions.
-*/
+ */
 
 
 // *****************************************************************************
@@ -115,35 +129,581 @@ static QueueHandle_t pathQueue;
     See prototype in pathfinding.h.
  */
 
-void PATHFINDING_Initialize ( void )
-{
+void PATHFINDING_Initialize(void) {
     /* Place the App state machine in its initial state. */
     pathfindingData.state = PATHFINDING_STATE_INIT;
-    
+
     //Initialize the navigation queue
-    pathQueue = xQueueCreate(10, sizeof(unsigned char[PATH_QUEUE_BUFFER_SIZE]));
-    if(pathQueue == 0){
+    
+    pathQueue = xQueueCreate(10, sizeof (unsigned char[PATH_QUEUE_BUFFER_SIZE]));
+    if (pathQueue == 0) {
         dbgPauseAll();
     }
 
-    
+
     /* TODO: Initialize your application's state machine and other
      * parameters.
      */
 }
 
-void pathSendMsg(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]){
-    BaseType_t xHigherPriorityTaskWoken =  pdTRUE;//pdFALSE;
+void pathSendMsg(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]) {
+    BaseType_t xHigherPriorityTaskWoken = pdTRUE; //pdFALSE;
     xQueueSendToBack(pathQueue, msg, portMAX_DELAY);
 }
-    
-unsigned char pathCalculateChecksum(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]){
+
+unsigned char pathCalculateChecksum(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]) {
     unsigned char sum = 0;
     unsigned int i;
-    for (i = 0; i < PATH_QUEUE_BUFFER_SIZE - 1; i++){
+    for (i = 0; i < PATH_QUEUE_BUFFER_SIZE - 1; i++) {
         sum += msg[i];
     }
     return sum;
+}
+
+crossSquare convertFieldItemToCrossSquare(fieldItem tempFieldItem) {
+    unsigned char lowX = tempFieldItem.centerX - (tempFieldItem.width / 2);
+    unsigned char highX = tempFieldItem.centerX + (tempFieldItem.width / 2);
+    unsigned char lowY = tempFieldItem.centerY - (tempFieldItem.length / 2);
+    unsigned char highY = tempFieldItem.centerY + (tempFieldItem.length / 2);
+    point topLeft = convertXAndYToPoint(lowX, highY);
+    point bottomRight = convertXAndYToPoint(highX, lowY);
+    return convertPointsToCrossSquare(topLeft, bottomRight);
+}
+
+//Takes an x and y and returns a point struct
+point convertXAndYToPoint(unsigned char x, unsigned char y) {
+    point tempPoint;
+    tempPoint.x = x;
+    tempPoint.y = y;
+    return tempPoint;
+}
+
+//Converts two points into a crossSquare
+crossSquare convertPointsToCrossSquare(point topLeft, point bottomRight) {
+    crossSquare tempCrossSquare;
+    tempCrossSquare.topLeft = topLeft;
+    tempCrossSquare.bottomRight = bottomRight;
+    return tempCrossSquare;
+}
+
+//Checks if a fieldItem with the same "objectType" is already in the stack
+//Returns -1 if it's not in there, returns in location of the object in the list if it is
+int checkIfObjectInStack(unsigned char objectType) {
+    int i;
+
+    for (i = 0; i < fieldItemStackTop; i++) {
+        if (fieldItemStack[i].objectType == objectType) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+//Places a fieldItem on the stack, and calculates the respective crossSquare and also places that on a stack
+void storeInFieldItemStack(fieldItem tempFieldItem) {
+    int updateLoc = checkIfObjectInStack(tempFieldItem.objectType);
+    //-1 means it was not in the stack
+    if (updateLoc == -1) {
+        fieldItemStack[fieldItemStackTop] = tempFieldItem;
+        fieldItemStackTop++;
+        if (tempFieldItem.objectType == 0 || tempFieldItem.objectType == 1) {
+            //do nothing so nothing is added to crossSquare stack
+        } else {
+            crossSquareStack[crossSquareStackTop] = convertFieldItemToCrossSquare(tempFieldItem);
+            crossSquareStackTop++;
+        }
+        
+    } else {
+        fieldItemStack[updateLoc] = tempFieldItem;
+        if (tempFieldItem.objectType == 0 || tempFieldItem.objectType == 1) {
+            //do nothing so nothing is updated in the crossSquare stack
+        } else {
+            crossSquareStack[updateLoc] = convertFieldItemToCrossSquare(tempFieldItem);
+        }
+    }
+}
+
+//Calculates the offset nodes and places them in the adjacency list
+void calculateOffsetNodes(fieldItem tempFieldItem) {
+    point topLeftPoint;
+    point topRightPoint;
+    point bottomLeftPoint;
+    point bottomRightPoint;
+    int offset = NODE_OFFSET;
+    if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG_ROVER) { //This is the flag rover itself CHANGE THIS FOR OTHER ROVERS
+        point singleNode;
+        singleNode.x = tempFieldItem.centerX;
+        singleNode.y = tempFieldItem.centerY;
+        halfHeartedAdjacencyList.nodes[0] = singleNode;
+    } else if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG) { 
+        point singleNode;
+        singleNode.x = tempFieldItem.centerX;
+        singleNode.y = tempFieldItem.centerY;
+        halfHeartedAdjacencyList.nodes[1] = singleNode;
+    }else {
+    
+        if (tempFieldItem.objectType >= 2 && tempFieldItem.objectType < 8) {
+            offset *= 2;
+        } else if (tempFieldItem.objectType >= 8) {
+            //do nothing, offset is set correctly for this case (NODE_OFFSET)
+        }
+
+        //Calculate the four points (width + OFFSET) or (width + 2*OFFSET)
+        if (tempFieldItem.centerX >= ((tempFieldItem.width / 2) + offset) && tempFieldItem.centerY <= (255 - (tempFieldItem.length / 2) - offset)) {
+            topLeftPoint.x = tempFieldItem.centerX - (tempFieldItem.width / 2) - offset;
+            topLeftPoint.y = tempFieldItem.centerY + (tempFieldItem.length / 2) + offset;
+            if (checkIfNodeValid(topLeftPoint)) {
+                halfHeartedAdjacencyList.nodes[currentNumberOfNodes] = topLeftPoint;
+                currentNumberOfNodes++;
+            }
+        }
+        if (tempFieldItem.centerX <= (255 - (tempFieldItem.width / 2) + offset) && tempFieldItem.centerY <= (255 - (tempFieldItem.length / 2) - offset)) {
+            topRightPoint.x = tempFieldItem.centerX + (tempFieldItem.width / 2) + offset;
+            topRightPoint.y = tempFieldItem.centerY + (tempFieldItem.length / 2) + offset;
+            if (checkIfNodeValid(topRightPoint)) {
+                halfHeartedAdjacencyList.nodes[currentNumberOfNodes] = topRightPoint;
+                currentNumberOfNodes++;
+            }
+        }
+
+        if (tempFieldItem.centerX >= ((tempFieldItem.width / 2) + offset) && tempFieldItem.centerY >= ((tempFieldItem.length / 2) + offset)) {
+            bottomLeftPoint.x = tempFieldItem.centerX - (tempFieldItem.width / 2) - offset;
+            bottomLeftPoint.y = tempFieldItem.centerY - (tempFieldItem.length / 2) - offset;
+            if (checkIfNodeValid(bottomLeftPoint)) {
+                halfHeartedAdjacencyList.nodes[currentNumberOfNodes] = bottomLeftPoint;
+                currentNumberOfNodes++;
+            }
+        }
+
+        if (tempFieldItem.centerX <= (255 - (tempFieldItem.width / 2) - offset) && tempFieldItem.centerY >= ((tempFieldItem.length / 2) + offset)) {
+            bottomRightPoint.x = tempFieldItem.centerX + (tempFieldItem.width / 2) + offset;
+            bottomRightPoint.y = tempFieldItem.centerY - (tempFieldItem.length / 2) - offset;
+            if (checkIfNodeValid(bottomRightPoint)) {
+                halfHeartedAdjacencyList.nodes[currentNumberOfNodes] = bottomRightPoint;
+                currentNumberOfNodes++;
+            }
+        }
+    }
+}
+
+//Calls the calculation of all nodes (4 at a time) for each fieldItem on the stack
+void fillAdjacencyNodes() {
+    int i;
+    for (i = 0; i < fieldItemStackTop; i++) {
+        calculateOffsetNodes(fieldItemStack[i]);
+    }
+}
+
+//Returns false if a node is in an illegal location (within an object) or true otherwise
+bool checkIfNodeValid(point tempPoint) {
+    //Check for intersections or within bounds of objects
+    int i;
+    for (i = 0; i < fieldItemStackTop; i++) {
+        if (checkIfPointWithinFieldItem(tempPoint, fieldItemStack[i])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+//Returns true if a point is within a bounding box of the fieldItem passed in
+bool checkIfPointWithinFieldItem(point pointToCheck, fieldItem tempFieldItem) {
+    unsigned char minX;
+    unsigned char maxX;
+    unsigned char minY;
+    unsigned char maxY;
+    minX = tempFieldItem.centerX - (tempFieldItem.width / 2);
+    maxX = tempFieldItem.centerX + (tempFieldItem.width / 2);
+    minY = tempFieldItem.centerY - (tempFieldItem.length / 2);
+    maxY = tempFieldItem.centerY + (tempFieldItem.length / 2);
+    if (pointToCheck.x <= maxX && pointToCheck.x >= minX && pointToCheck.y <= maxY && pointToCheck.y >= minX) {
+        return true;
+    }
+    return false;
+}
+
+//Null fill the adjacency list
+void clearAdjacencyList() {
+    int i;
+    int j;
+    for (i = 0; i < currentNumberOfNodes; i++) {
+        for (j = 0; j < MAXIMUM_NUMBER_OF_IN_SIGHT_NODES; j++) {
+            halfHeartedAdjacencyList.edges[i][j] = '\0';
+        }
+    }
+    currentNumberOfNodes = 2;
+}
+
+//Returns the maximum of the two numbers passed in
+unsigned char getMax(unsigned char num1, unsigned char num2) {
+    if (num1 > num2) {
+        return num1;
+    }
+    return num2;
+}
+
+//Returns the minimum of the two numbers passed in
+unsigned char getMin(unsigned char num1, unsigned char num2) {
+    if (num1 > num2) {
+        return num2;
+    }
+    return num1;
+}
+
+// Given three colinear points p, q, r, the function checks if
+// point q lies on line segment 'pr'
+bool onSegment(point p, point q, point r) {
+    if (q.x <= getMax(p.x, r.x) && q.x >= getMin(p.x, r.x) && q.y <= getMax(p.y, r.y) && q.y >= getMin(p.y, r.y)) {
+        return true;
+    }
+    return false;
+}
+
+// To find orientation of ordered triplet (p, q, r).
+// The function returns following values
+// 0 --> p, q and r are collinear
+// 1 --> Clockwise
+// 2 --> Counterclockwise
+int orientation(point p, point q, point r) {
+    int val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+ 
+    if (val == 0) {
+        return 0;  // collinear
+    }
+ 
+    return (val > 0)? 1: 2; // clock or counterclock wise
+}
+
+//Calls the line intersection function on each part of a crossSquare (p2 = topLeft, q2 = bottomRight)
+bool checkIntersectionOfLineAndCrossSquare(point p1, point q1, point p2, point q2) {
+    if (p2.x == NULL || p2.y == NULL || q2.x == NULL || q2.y == NULL) {
+        return true;
+    }
+    if (checkIntersectionOfTwoLines(p1, q1, p2, q2)) {
+        return true;
+    }
+    point bottomLeft;
+    point topRight;
+    bottomLeft.x = p2.x;
+    bottomLeft.y = q2.y;
+    
+    topRight.x = q2.x;
+    topRight.y = p2.y;
+    
+    if (checkIntersectionOfTwoLines(p1, q1, bottomLeft, topRight)) {
+        return true;
+    }
+    return false;
+}
+
+//Returns true if two lines intersect
+bool checkIntersectionOfTwoLines(point p1, point q1, point p2, point q2) {
+// Find the four orientations needed for general and
+    // special cases
+    int o1 = orientation(p1, q1, p2);
+    int o2 = orientation(p1, q1, q2);
+    int o3 = orientation(p2, q2, p1);
+    int o4 = orientation(p2, q2, q1);
+ 
+    // General case
+    if (o1 != o2 && o3 != o4)
+        return true;
+ 
+    // Special Cases
+    // p1, q1 and p2 are collinear and p2 lies on segment p1q1
+    if (o1 == 0 && onSegment(p1, p2, q1)) return true;
+ 
+    // p1, q1 and p2 are collinear and q2 lies on segment p1q1
+    if (o2 == 0 && onSegment(p1, q2, q1)) return true;
+ 
+    // p2, q2 and p1 are collinear and p1 lies on segment p2q2
+    if (o3 == 0 && onSegment(p2, p1, q2)) return true;
+ 
+     // p2, q2 and q1 are collinear and q1 lies on segment p2q2
+    if (o4 == 0 && onSegment(p2, q1, q2)) return true;
+ 
+    return false; // Doesn't fall in any of the above cases
+}
+
+//Returns true if the line of sight between two nodes does not intersect with any objects
+bool checkIfTwoNodesInSightOfEachOther(point point1, point point2) {
+    int i;
+    if (point1.x == NULL || point1.y == NULL || point2.x == NULL || point2.y == NULL) {
+        return false;
+    }
+    
+    for (i = 0; i < crossSquareStackTop; i++) { //subtract 2
+        if (checkIntersectionOfLineAndCrossSquare(point1, point2, crossSquareStack[i].topLeft, crossSquareStack[i].bottomRight)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+//Controller function that organizes function calls to create the adjacency edges
+void createAdjacencyEdges() {
+    unsigned char i;
+    unsigned char j;
+    unsigned char startingNumberOfEdges = 0;
+
+    unsigned char curNumEdges;
+    for (i = 0; i < currentNumberOfNodes; i++) {
+        while (1) {
+            if (halfHeartedAdjacencyList.edges[i][startingNumberOfEdges] == '\0') {
+                break;
+            } else {
+                startingNumberOfEdges++;
+            }
+        }
+        
+        curNumEdges = startingNumberOfEdges;
+        startingNumberOfEdges = 0;
+        for (j = i; j < currentNumberOfNodes; j++) {
+
+            if (i == j) {
+                //Do nothing on purpose
+            } else if (checkIfTwoNodesInSightOfEachOther(halfHeartedAdjacencyList.nodes[i], halfHeartedAdjacencyList.nodes[j])) {
+                halfHeartedAdjacencyList.edges[i][curNumEdges] = j;
+                while (1) {
+                    if (halfHeartedAdjacencyList.edges[j][startingNumberOfEdges] == '\0') {
+                        break;
+                    } else {
+                        startingNumberOfEdges++;
+                    }
+                }
+                halfHeartedAdjacencyList.edges[j][startingNumberOfEdges] = i;
+                startingNumberOfEdges = 0;
+                curNumEdges++;
+            }
+        }
+    }
+}
+
+//For testing purposes only.
+//Sends out all current adjacency list edges in JSON format over wifly. One message per edge.
+void testingSendOutEdgesOverWifly() {
+    int i;
+    int j;
+    for (i=0; i < currentNumberOfNodes; i++) {
+        j=0;
+        while(1) {
+            if (halfHeartedAdjacencyList.edges[i][j] == '\0') {
+                break;
+            } else {
+//                testingSendEdgeWithCoordinatesOverWifly(i, halfHeartedAdjacencyList.edges[i][j], halfHeartedAdjacencyList.nodes[i], halfHeartedAdjacencyList.nodes[j]);
+                testingSendEdgeOverWifly(i, halfHeartedAdjacencyList.edges[i][j]);
+                j++;
+            }
+        }
+    }
+}
+
+// Controller function that calls necessary functions in order to create adjacency list
+void calculateAdjacencyList() {
+    clearAdjacencyList();
+    fillAdjacencyNodes();
+    createAdjacencyEdges();
+//    testingSendOutEdgesOverWifly();
+}
+
+//Resets all private AStar related structures before running the algorithm
+void clearAStarLists(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]) {
+    int i;
+    for (i=0; i < MAXIMUM_NUMBER_OF_NODES; i++) {
+        closedSet[i] = 0;
+        openSet[i] = '\0';
+        gScoreArray[i] = 65535;
+        fScoreArray[i] = 65535;
+        cameFrom[i] = 123;
+    }
+    for(i=0; i < MAXIMUM_NUMBER_OF_IN_SIGHT_NODES; i++) {
+        path[i] = 125;
+    }
+    openSetTop = 0;
+}
+
+//Calculates the euclidean distance between two nodes (takes in the location of the node in the adjacency list))
+unsigned short calculateEuclideanDistance(unsigned char starting, unsigned char ending) {
+    int curTotal;
+    point startingPoint = halfHeartedAdjacencyList.nodes[starting];
+    point endingPoint = halfHeartedAdjacencyList.nodes[ending];
+    curTotal = sqrt(pow(startingPoint.x - endingPoint.x, 2) + pow(startingPoint.y - endingPoint.y, 2));
+    if (curTotal > 65535) {
+        return 65535;
+    } else {
+        return (unsigned short)curTotal;
+    }
+}
+
+//Returns true if the open set is empty
+bool isUnsortedOpenSetEmpty() {
+    int i;
+    for (i=0; i < openSetTop; i++) {
+        if (openSet[i] != 0) {
+            return false;
+        }
+    }
+    //This means 0 is the only element in the openSet
+    if (isClosedSetEmpty()) {
+        return false;
+    }
+    return true;
+}
+
+//returns true if the closed set is empty
+bool isClosedSetEmpty() {
+    int i;
+    for (i=0; i < openSetTop; i++) {
+        if (closedSet[i] != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+//Returns true if the passed in node is already in the closed set
+bool isNodeInClosedSet(unsigned char node) {
+    if (closedSet[node]) {
+        return true;
+    }
+    return false;
+}
+
+//Returns true if the passed in node is already in the open set
+bool isNodeInOpenSet(unsigned char node) {
+    int i;
+    for (i=0; i < openSetTop; i++) {
+        if (openSet[i] == node) {
+            return true;
+        }
+    }
+    return false;
+}
+
+//Returns the node with the lowest F score currently in the open set (returns the location of the node in the adjacency list)
+unsigned char getLowestFScore() {
+    int currentLowestValue = 65537;
+    unsigned char currentLowestNode = 0;
+    
+    int i;
+    for (i=0; i < openSetTop; i++) {
+        if (openSet[i] == '\0') {
+            continue;
+        }
+        if (fScoreArray[openSet[i]] < currentLowestValue) {
+            currentLowestValue = fScoreArray[openSet[i]];
+            currentLowestNode = openSet[i];
+        }
+    }
+    return currentLowestNode;
+}
+
+//Removes a node from the open set
+void removeFromOpenSet(unsigned char current) {
+    int i;
+    for (i=0; i < openSetTop; i++) {
+        if (openSet[i] == current) {
+            openSet[i] = '\0';
+            break;
+        }
+    }
+}
+
+//Adds a node to the closed set
+void addToClosedSet(unsigned char current) {
+    closedSet[current] = 1; //1 means it is in the list
+}
+
+//Adds a node to the open set
+void addToOpenSet(unsigned char current) {
+    openSet[openSetTop] = current;
+    openSetTop++;
+}
+
+//Returns the number of edges a node has (or the number of nodes it is connected to as they are equivalent)
+unsigned char getNumberOfNeighborsOfNode(unsigned char node) {
+    unsigned char i=0;
+    while(1) {
+        if (halfHeartedAdjacencyList.edges[node][i] == '\0') {
+            break;
+        }
+        i++;
+    }
+    return i;
+}
+
+//Walks the final path backwards constructing the final path
+void reconstructPath(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES], unsigned char current) {
+    unsigned char totalPathTop=0;
+    unsigned char loc = current;
+    while (loc != 0) {
+        path[totalPathTop] = loc;
+        totalPathTop++;
+        loc = cameFrom[loc];
+    }
+    path[totalPathTop] = loc;
+}
+
+//Returns 1 on failure, 0 upon success
+unsigned char monotonicAStar(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES], unsigned char start, unsigned char goal) {
+    clearAStarLists(path);
+    openSetTop = 1; //Reset top of openSet stack
+    openSet[start] = start;
+    gScoreArray[start] = 0; //Set the start gScore to 0
+    fScoreArray[start] = calculateEuclideanDistance(start, goal);
+    
+    unsigned char current;
+    while(!isUnsortedOpenSetEmpty()) {
+        current = getLowestFScore();
+        
+        if (current == goal) {
+            reconstructPath(path, current);
+            return 0;
+        }
+        
+        removeFromOpenSet(current);
+        addToClosedSet(current);
+        
+        unsigned char numNeighbors = getNumberOfNeighborsOfNode(current);
+        
+        unsigned char i;
+        for (i=0; i < numNeighbors; i++) {
+            unsigned char neighbor = halfHeartedAdjacencyList.edges[current][i];
+            
+            if (isNodeInClosedSet(neighbor)) {
+                continue;
+            }
+            
+            int tentative_gScore = gScoreArray[current] + calculateEuclideanDistance(current, neighbor);
+            if (!isNodeInOpenSet(neighbor)) {
+                addToOpenSet(neighbor);
+            } else if (tentative_gScore >= gScoreArray[neighbor]) {
+                continue;
+            }
+            
+            cameFrom[neighbor] = current;
+            gScoreArray[neighbor] = tentative_gScore;
+            fScoreArray[neighbor] = gScoreArray[neighbor] + calculateEuclideanDistance(neighbor, goal);
+        }
+    }
+    return 1;
+}
+
+//Returns 1 upon failure, 0 upon success
+unsigned char calculatePath() {
+    if (halfHeartedAdjacencyList.nodes[0].x == NULL || halfHeartedAdjacencyList.nodes[0].y == NULL || halfHeartedAdjacencyList.nodes[1].x == NULL || halfHeartedAdjacencyList.nodes[1].y == NULL) {
+        return 1;
+    }
+    unsigned char start = 0;
+    unsigned char goal = 1;
+    unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES];
+
+    if (monotonicAStar(path, start, goal)) {
+//        testingSendPathOverWifly(path);
+        return 1;
+    }
+    testingSendPathOverWifly(path);
+    return 0;
 }
 
 
@@ -155,22 +715,22 @@ unsigned char pathCalculateChecksum(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]){
     See prototype in pathfinding.h.
  */
 
-void PATHFINDING_Tasks ( void )
-{
+int PRIVATEDELETEME = 0;
+point currentGoal;
+
+void PATHFINDING_Tasks(void) {
     dbgOutputLoc(DBG_LOC_PATH_ENTER);
 
     /* Check the application's current state. */
-    switch ( pathfindingData.state )
-    {
-        /* Application's initial state. */
+    switch (pathfindingData.state) {
+            /* Application's initial state. */
         case PATHFINDING_STATE_INIT:
         {
             bool appInitialized = true;
-       
-        
-            if (appInitialized)
-            {
-            
+
+
+            if (appInitialized) {
+
                 pathfindingData.state = PATHFINDING_STATE_SERVICE_TASKS;
             }
             break;
@@ -179,37 +739,61 @@ void PATHFINDING_Tasks ( void )
         case PATHFINDING_STATE_SERVICE_TASKS:
         {
             unsigned char receivemsg[PATH_QUEUE_BUFFER_SIZE];
-            
+
             dbgOutputLoc(DBG_LOC_PATH_BEFORE_WHILE);
-            while(1){
+            while (1) {
                 //Block until a message is received
                 dbgOutputLoc(DBG_LOC_PATH_BEFORE_RECEIVE);
                 BaseType_t receiveCheck = xQueueReceive(pathQueue, receivemsg, portMAX_DELAY);
                 dbgOutputLoc(DBG_LOC_PATH_AFTER_RECEIVE);
                 
+
                 //Handle the message
-                if(receiveCheck == pdTRUE){
+                if (receiveCheck == pdTRUE) {
                     //Get the message ID
                     int msgId = (receivemsg[PATH_SOURCE_ID_IDX] & PATH_SOURCE_ID_MASK) >> PATH_SOURCE_ID_OFFSET;
+
                     //Handle a specific message
-                    if (msgId == PATH_COMMUNICATION_ID){
+                    if (msgId == PATH_COMMUNICATION_ID) {
                         //Handle message from communication thread
-                    }else if (msgId == PATH_FLAG_CAPTURE_ID){
+                        if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_FIELD_ITEM_SEND) {
+
+                        } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_START_GAME) {
+
+                        } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_PAUSE_GAME) {
+
+                        } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_FLAG_CAPTURE_SEND) {
+
+                        } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_NAVIGATION_SEND) {
+
+                        } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_ITEM_TEST) {
+                            fieldItem tempFieldItem;
+                            constructFieldItem(&tempFieldItem, receivemsg[0], receivemsg[6], receivemsg[4], receivemsg[3], receivemsg[1], receivemsg[2], receivemsg[5]);
+                            storeInFieldItemStack(tempFieldItem);
+                            calculateAdjacencyList();
+                            calculatePath();
+                            
+                            PRIVATEDELETEME++;
+                            if (PRIVATEDELETEME == 5) {
+                                Nop();
+                            }
+                        }
+                    } else if (msgId == PATH_FLAG_CAPTURE_ID) {
                         //Handle message from flag capture thread
                         //Only applicable on flag rover
-                    }else if (msgId == PATH_NAVIGATION_ID){
+                    } else if (msgId == PATH_NAVIGATION_ID) {
                         //Handle message from navigation thread
                     }
                 }
             }
-        
+
             break;
         }
 
-        /* TODO: implement your application state machine.*/
-        
+            /* TODO: implement your application state machine.*/
 
-        /* The default state should never be executed. */
+
+            /* The default state should never be executed. */
         default:
         {
             /* TODO: Handle error in application's state machine. */
@@ -218,7 +802,7 @@ void PATHFINDING_Tasks ( void )
     }
 }
 
- 
+
 
 /*******************************************************************************
  End of File

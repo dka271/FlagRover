@@ -85,6 +85,23 @@ unsigned char navCalculateChecksum(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]){
     return sum;
 }
 
+void sendEdgeToNavigationThread(unsigned char seqNum, unsigned char startX, unsigned char startY, unsigned char endX, unsigned char endY) {
+    BaseType_t xHigherPriorityTaskWoken =  pdTRUE;//pdFALSE;
+    char msg[7];
+    msg[0] = seqNum;
+    msg[1] = startX;
+    msg[2] = startY;
+    msg[3] = endX;
+    msg[4] = endY;
+    msg[5] = NAV_PATHFINDING_ID;
+    unsigned char i;
+    for (i=0; i < 6; i++) {
+        msg[6] += msg[i];
+    }
+
+    xQueueSendToBack(navQueue, msg, portMAX_DELAY);
+}
+
 
 /******************************************************************************
   Function:

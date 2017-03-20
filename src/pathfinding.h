@@ -247,6 +247,7 @@ void removeFromOpenSet(unsigned char current);
 void addToOpenSet(unsigned char current);
 void reconstructPath(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES], unsigned char current);
 bool isClosedSetEmpty();
+void sendPathToNavigationThread(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]);
 
 /*******************************************************************************
   Function:

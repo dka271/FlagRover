@@ -517,7 +517,7 @@ void clearAStarLists(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]) {
         cameFrom[i] = 123;
     }
     for(i=0; i < MAXIMUM_NUMBER_OF_IN_SIGHT_NODES; i++) {
-        path[i] = 125;
+        path[i] = END_OF_PATH_NUM;
     }
     openSetTop = 0;
 }
@@ -698,12 +698,31 @@ unsigned char calculatePath() {
     unsigned char goal = 1;
     unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES];
 
+    //If statement runs if AStar fails
     if (monotonicAStar(path, start, goal)) {
 //        testingSendPathOverWifly(path);
         return 1;
     }
     testingSendPathOverWifly(path);
+    sendPathToNavigationThread(path);
     return 0;
+}
+
+//Sends the path (one edge at a time) to the navigation queue
+void sendPathToNavigationThread(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]) {
+    unsigned char numNodesInPath;
+    Nop();
+    for (numNodesInPath=0; numNodesInPath < MAXIMUM_NUMBER_OF_IN_SIGHT_NODES; numNodesInPath++) {
+        if (path[numNodesInPath] == END_OF_PATH_NUM) {
+            break;
+        }
+    }
+    
+    unsigned char i;
+    for (i=(numNodesInPath-1); i > 1; i--) {
+        sendEdgeToNavigationThread(numNodesInPath-i-1, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);
+    }
+    sendEdgeToNavigationThread(END_OF_PATH_NUM, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);    
 }
 
 

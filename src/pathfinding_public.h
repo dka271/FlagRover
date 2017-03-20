@@ -71,6 +71,9 @@ typedef struct {
 #define IDENTITY_OF_ENEMY_TAGGER_ROVER 7
 #define IDENTITY_OF_ENEMY_COUNTER_ROVER 8
 
+//End of path identifier
+#define END_OF_PATH_NUM 125
+
 unsigned char pathCalculateChecksum(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]);
     
 void pathSendMsg(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]);

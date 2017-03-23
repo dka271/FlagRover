@@ -94,10 +94,7 @@ void sendEdgeToNavigationThread(unsigned char seqNum, unsigned char startX, unsi
     msg[3] = endX;
     msg[4] = endY;
     msg[5] = NAV_PATHFINDING_ID;
-    unsigned char i;
-    for (i=0; i < 6; i++) {
-        msg[6] += msg[i];
-    }
+    msg[6] = navCalculateChecksum(msg);
 
     xQueueSendToBack(navQueue, msg, portMAX_DELAY);
 }

@@ -118,13 +118,11 @@ void NAVIGATION_Tasks ( void )
     unsigned int previousValue2 = 0;
     unsigned int speed2;
     unsigned int pwmCount = 0;
-    unsigned int desiredSpeed = 0;
+    unsigned int desiredSpeed = ROVER_SPEED_STOPPED;
+    int ticksRemaining = ROVER_TICKS_REMAINING_NONE;
     int m1PID;
     int m2PID;
-    Motor1SetPWM(0);
-    Motor2SetPWM(0);
-    Motor1SetDirection(MOTOR_1_FORWARDS);
-    Motor2SetDirection(MOTOR_2_FORWARDS);
+    SetDirectionForwards();
 
     dbgOutputLoc(DBG_LOC_NAV_BEFORE_WHILE);
     while(1){
@@ -142,24 +140,31 @@ void NAVIGATION_Tasks ( void )
             //Handle a specific message
             if (msgId == NAV_TIMER_COUNTER_3_ID){
                 //Motor 2 Encoder Message Handler
-                //dbgOutputVal((receivemsgint & 0x00ff0000) >> 16);
-                //dbgOutputVal((receivemsgint & 0x0000ff00) >> 8);
-                //dbgOutputVal(receivemsgint & 0x000000ff);
                 speed2 = (receivemsgint & 0x0000ffff) - previousValue2;
-                //dbgUARTVal(speed2);
                 previousValue2 = receivemsgint & 0x0000ffff;
+                
+                //Handle remaining distance
+                if (GetMotorDirection() == ROVER_DIRECTION_LEFT){
+                    HandleDistanceRemaining(&desiredSpeed, &ticksRemaining, speed2);
+                
+                    //Handle Daniel's server testing
+                    motorTestNavSendSpeed(speed2);
+                }
 
                 //Handle PWM stuff
                 m2PID = PID2(desiredSpeed, speed2);
             }else if (msgId == NAV_TIMER_COUNTER_5_ID){
                 //Motor 2 Encoder Message Handler
-                //dbgOutputVal((receivemsgint & 0x00ff0000) >> 16);
-                //dbgOutputVal((receivemsgint & 0x0000ff00) >> 8);
-                //dbgOutputVal(receivemsgint & 0x000000ff);
                 speed1 = (receivemsgint & 0x0000ffff) - previousValue1;
-//                        dbgUARTVal(speed1);
-//                        dbgOutputVal(speed1);
                 previousValue1 = receivemsgint & 0x0000ffff;
+                
+                //Handle remaining distance
+                if (GetMotorDirection() != ROVER_DIRECTION_LEFT){
+                    HandleDistanceRemaining(&desiredSpeed, &ticksRemaining, speed1);
+                
+                    //Handle Daniel's server testing
+                    motorTestNavSendSpeed(speed1);
+                }
 
                 //Handle PWM stuff
                 m1PID = PID1(desiredSpeed, speed1);
@@ -177,20 +182,20 @@ void NAVIGATION_Tasks ( void )
                     navQueueReceiveTest(receivemsg);
                 }
             }else if (msgId == NAV_PATHFINDING_ID){
-                //Handle stuff from the mapping queue
-                //dbgOutputVal((receivemsgint & 0x00ff0000) >> 16);
-                //dbgOutputVal((receivemsgint & 0x0000ff00) >> 8);
-                //dbgOutputVal(receivemsgint & 0x000000ff);
+                //Handle stuff from the pathfinding queue
+                //Messages are in the form: (high) [checksum, sourceID, endY, endX, startY, startX, seqNum] (low)
             }else if (msgId == NAV_PWM_TIMER_ID){
-                //int ticksTarget = TEST_SPEED_TICKS;
+                //Handle PWM timer messages
                 Motor1SetPWM(GetPWMFromValue(m1PID, pwmCount));
                 Motor2SetPWM(GetPWMFromValue(m2PID, pwmCount));
-//                        dbgOutputVal(m1PID);
-                //dbgOutputVal(m2PID);
                 pwmCount++;
                 if (pwmCount >= 25){
                     pwmCount = 0;
                 }
+            }else if (msgId == NAV_OTHER_ID){
+                //Handle a message from another source
+                //Handle Daniel's server testing
+                motorTestNavReceive(receivemsg, &desiredSpeed, &ticksRemaining);
             }
         }
     }

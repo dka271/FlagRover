@@ -703,7 +703,7 @@ unsigned char calculatePath() {
 //        testingSendPathOverWifly(path);
         return 1;
     }
-    testingSendPathOverWifly(path);
+//    testingSendPathOverWifly(path);
     sendPathToNavigationThread(path);
     return 0;
 }

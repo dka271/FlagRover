@@ -39,6 +39,7 @@
 #include "navigation_public.h"
 #include "communication_public.h"
 #include "myjson.h"
+#include "math.h"
 
 /* Provide C++ Compatibility */
 #ifdef __cplusplus
@@ -69,12 +70,13 @@ extern "C" {
 #define TEST_COMM_SPEED_IDX 0
 #define TEST_NAV_ID_IDX 1
 #define TEST_NAV_DATA_IDX 0
+#define MOTOR_PATHFINDING_INTEGRATION_TESTING 0
     
 //Useful constants
-#define ROVER_DIRECTION_LEFT 0
-#define ROVER_DIRECTION_RIGHT 1
-#define ROVER_DIRECTION_FORWARDS 2
-#define ROVER_DIRECTION_BACKWARDS 3
+#define ROVER_DIRECTION_LEFT 0x0003
+#define ROVER_DIRECTION_RIGHT 0x000c
+#define ROVER_DIRECTION_FORWARDS 0x0030
+#define ROVER_DIRECTION_BACKWARDS 0x00c0
 #define ROVER_SPEED_STRAIGHT 45
 #define ROVER_SPEED_TURNING 38
 #define ROVER_SPEED_SLOW 15
@@ -82,12 +84,22 @@ extern "C" {
 #define ROVER_TICKS_REMAINING_MAX 0x7fffffff
 #define ROVER_TICKS_REMAINING_SLOW 400
 #define ROVER_TICKS_REMAINING_NONE 0
+#define CALCULATE_IN_INCHES ((bool) true)
+#define CALCULATE_IN_CENTIMETERS ((bool) false)
 
 // *****************************************************************************
 // *****************************************************************************
 // Section: Functions
 // *****************************************************************************
 // *****************************************************************************
+    
+//These functions are used to interface with the location and orientation of the rover
+void SetOrientation(float orientation);
+float GetOrientation();
+void SetLocationX(float x);
+float GetLocationX();
+void SetLocationY(float y);
+float GetLocationY();
     
 //These turn the motors on/off, and make them go forwards/backwards
 void Motor1SetDirection(int direction);
@@ -97,6 +109,10 @@ void Motor2SetPWM(int pwm);
 
 //This function handles distance remaining and controls the speed of the rover
 void HandleDistanceRemaining(int *desiredSpeed, int *ticksRemaining, int changeInSpeed);
+
+//This function handles position and orientation updates
+//The orientation is returned as a degree value between -180 and 180
+void HandlePositionAndOrientation(int speed, int direction, bool inOrCm);
 
 //These functions handle setting the direction of the rover
 void SetDirectionClockwise();
@@ -112,17 +128,32 @@ int GetMotorDirection();
 int ConvertJSONToAngle(unsigned char jsonAngle);
 
 //These functions are used for converting between encoder ticks and ideal rotation degrees
-//There are about 6.8 ticks per degree
 int deg2tick(int deg);
 int tick2deg(int ticks);
+int deg2tickF(float deg);
+float tick2degF(int ticks);
 
 //These functions are used for converting between encoder ticks and distance in inches
-//There are 379.425 ticks per inch
 int in2tick(int inches);
 int tick2in(int ticks);
+int in2tickF(float inches);
+float tick2inF(int ticks);
+
+//These functions are used for converting between encoder ticks and distance in inches
+int cm2tick(int centimeters);
+int tick2cm(int ticks);
+int cm2tickF(float centimeters);
+float tick2cmF(int ticks);
+
+//These functions return distance and angle in ticks
+//This function calculates the distance in inches or centimeters between two points
+int CalculateDistanceFromPoints(int x1, int y1, int x2, int y2, bool inOrCm);
+//This function calculates the angle between a vector defined by two points and 0 degrees
+//The return value is in degrees
+int CalculateAngleFromPoints(int x1, int y1, int x2, int y2, float orientation);
 
 //These functions calculate the amount of ticks needed to rotate or travel a certain distance
-int CalculateTicksToTravel(unsigned char distance);
+int CalculateTicksToTravel(unsigned char distance, bool inOrCm);
 int CalculateTicksToRotate(unsigned char angle);
 
 //Given a value between 0 and 25, calculate the PWM

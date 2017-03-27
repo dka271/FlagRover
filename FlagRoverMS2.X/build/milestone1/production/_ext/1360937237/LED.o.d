@@ -1,6 +1,7 @@
-build/milestone1/production/_ext/1360937237/flagcapture.o:  \
- ../src/flagcapture.c  \
-../src/flagcapture.h  \
+build/milestone1/production/_ext/1360937237/LED.o:  \
+../src/LED.c  \
+ ../src/LED.h  \
+../src/debug.h  \
  ../src/system_config/milestone1/system_config.h  \
  ../src/system_config/milestone1/system_definitions.h  \
  ../../../../../../microchip/harmony/v1_09/framework/system/common/sys_common.h  \
@@ -262,7 +263,7 @@ build/milestone1/production/_ext/1360937237/flagcapture.o:  \
  ../src/app.h  \
  ../../../../../../microchip/harmony/v1_09/framework/system/msg/sys_msg.h  \
  ../../../../../../microchip/harmony/v1_09/framework/system/msg/config/sys_msg_config.h  \
- ../src/debug.h  \
+ ../src/motor.h  \
  ../../../../../../microchip/harmony/v1_09/framework/peripheral/peripheral.h  \
  ../../../../../../microchip/harmony/v1_09/framework/peripheral/adc/plib_adc.h  \
  ../../../../../../microchip/harmony/v1_09/framework/peripheral/adc/processor/adc_processor.h  \
@@ -830,17 +831,14 @@ build/milestone1/production/_ext/1360937237/flagcapture.o:  \
  ../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_processor.h  \
  ../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_p32xxxx.h  \
  ../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_p32mx795f512l.h  \
- ../src/motor.h  \
-../src/navigation_public.h  \
+ ../src/navigation_public.h  \
 ../src/communication_public.h  \
- ../src/myjson.h  \
-../src/ms2test.h  \
+../src/myjson.h  \
+ ../src/ms2test.h  \
 ../src/communication.h  \
- ../src/electromagnet.h  \
-../src/navigation.h  \
-../src/LED.h  \
- ../src/pathfinding.h  \
+../src/electromagnet.h  \
+ ../src/navigation.h  \
+../src/pathfinding.h  \
 ../src/pathfinding_public.h  \
-../src/communication.h  \
- ../src/flagcapture.h  \
-../src/flagcapture_public.h 
+ ../src/communication.h  \
+../src/flagcapture.h 

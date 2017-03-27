@@ -68,6 +68,8 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "system/msg/sys_msg.h"
 #include "debug.h"
 #include "motor.h"
+#include "electromagnet.h"
+#include "LED.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility

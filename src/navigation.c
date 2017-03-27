@@ -271,6 +271,9 @@ void NAVIGATION_Tasks ( void )
                     navQueueReceiveTest(receivemsg);
                 }
             }else if (msgId == NAV_PATHFINDING_ID){
+                Nop();
+//                ElectromagnetSetOn();
+//                LedSetOn();
                 //Handle stuff from the pathfinding queue
                 //Messages are in the form: (high) [checksum, sourceID, endY, endX, startY, startX, seqNum] (low)
                 unsigned char seqNum = receivemsg[0];

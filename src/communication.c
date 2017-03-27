@@ -332,7 +332,7 @@ void COMMUNICATION_Tasks(void) {
                         } else {
                             //bad
                             NumBadChecksums++;
-                            dbgOutputVal(NumBadChecksums);
+//                            dbgOutputVal(NumBadChecksums);
                             dbgOutputLoc(DBG_LOC_BAD_ERROR - 7);
                         }
                     }
@@ -345,7 +345,7 @@ void COMMUNICATION_Tasks(void) {
                     } else {
                         //This is bad
                         NumDroppedMessages++;
-                        dbgOutputVal(NumDroppedMessages);
+//                        dbgOutputVal(NumDroppedMessages);
                         dbgOutputLoc(DBG_LOC_BAD_ERROR - 6);
                     }
                     PreviousSequenceNumber = SequenceNumber;

@@ -784,18 +784,32 @@ void PATHFINDING_Tasks(void) {
                         } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_FLAG_CAPTURE_SEND) {
 
                         } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_NAVIGATION_SEND) {
-
-                        } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_ITEM_TEST) {
-                            fieldItem tempFieldItem;
-                            constructFieldItem(&tempFieldItem, receivemsg[0], receivemsg[6], receivemsg[4], receivemsg[3], receivemsg[1], receivemsg[2], receivemsg[5]);
-                            storeInFieldItemStack(tempFieldItem);
-                            calculateAdjacencyList();
-                            calculatePath();
+                            //Receiving a feedback loop from the Navigation thread
                             
-                            PRIVATEDELETEME++;
-                            if (PRIVATEDELETEME == 5) {
+                        } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_ITEM_TEST) {
+                            if (receivemsg[0] == 'g') {
                                 Nop();
+                                calculatePath();
+                            } else if (receivemsg[0] == 'l') {
+                                
+                                region tempRegion;
+                                tempRegion.x = receivemsg[2];
+                                tempRegion.y = receivemsg[3];
+                                tempRegion.width = receivemsg[4];
+                                tempRegion.length = receivemsg[5];
+                                regionList[receivemsg[1]] = tempRegion;
+                                
+                            } else {
+                                fieldItem tempFieldItem;
+                                constructFieldItem(&tempFieldItem, receivemsg[0], receivemsg[6], receivemsg[4], receivemsg[3], receivemsg[1], receivemsg[2], receivemsg[5]);
+                                storeInFieldItemStack(tempFieldItem);
+                                calculateAdjacencyList();
                             }
+                            
+//                            PRIVATEDELETEME++;
+//                            if (PRIVATEDELETEME == 5) {
+//                                Nop();
+//                            }
                         }
                     } else if (msgId == PATH_FLAG_CAPTURE_ID) {
                         //Handle message from flag capture thread

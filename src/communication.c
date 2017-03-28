@@ -355,26 +355,61 @@ void COMMUNICATION_Tasks(void) {
                         dbgOutputLoc(DBG_LOC_BAD_ERROR - 1);
                     } else if (Source == 'w') {
                         Nop();
-                        
-                        if (jsonGetFieldItem(receivemsg, &testFieldItem)) {
-                            //error
+                        if (jsonGetMessageType(receivemsg, MessageType)) {
+                        //error
+                        dbgOutputLoc(DBG_LOC_BAD_ERROR - 3);
+                        } else if (MessageType[0] == 'g') {
                             Nop();
-                            dbgOutputLoc(DBG_LOC_BAD_ERROR - 6);
-                        } else {
-                            Nop();
-                            msgDefNotGlobal[0] = testFieldItem.objectType;
-                            msgDefNotGlobal[1] = testFieldItem.centerX;
-                            msgDefNotGlobal[2] = testFieldItem.centerY;
-                            msgDefNotGlobal[3] = testFieldItem.width;
-                            msgDefNotGlobal[4] = testFieldItem.length;
-                            msgDefNotGlobal[5] = testFieldItem.orientation;
-                            msgDefNotGlobal[6] = testFieldItem.versionNumber;
+                            msgDefNotGlobal[0] = 'g';
                             
                             msgDefNotGlobal[PATH_MESSAGE_TYPE_IDX] = PATH_ITEM_TEST;
                             msgDefNotGlobal[PATH_SOURCE_ID_IDX] = (PATH_COMMUNICATION_ID & 0x00000003) << PATH_SOURCE_ID_OFFSET;
                             msgDefNotGlobal[PATH_CHECKSUM_IDX] = pathCalculateChecksum(msgDefNotGlobal);
-                            Nop();
+                        
                             pathSendMsg(msgDefNotGlobal);
+                            
+                        } else if (MessageType[0] == 'l') {
+                            Nop();
+                            if (jsonGetFieldItem(receivemsg, &testFieldItem)) {
+                                //error
+                                dbgOutputLoc(DBG_LOC_BAD_ERROR - 6);
+                            } else {
+                                msgDefNotGlobal[0] = 'l';
+                            
+                                msgDefNotGlobal[1] = testFieldItem.objectType;
+                                msgDefNotGlobal[2] = testFieldItem.centerX;
+                                msgDefNotGlobal[3] = testFieldItem.centerY;
+                                msgDefNotGlobal[4] = testFieldItem.width;
+                                msgDefNotGlobal[5] = testFieldItem.length;
+                                msgDefNotGlobal[6] = testFieldItem.versionNumber;
+
+                                msgDefNotGlobal[PATH_MESSAGE_TYPE_IDX] = PATH_ITEM_TEST;
+                                msgDefNotGlobal[PATH_SOURCE_ID_IDX] = (PATH_COMMUNICATION_ID & 0x00000003) << PATH_SOURCE_ID_OFFSET;
+                                msgDefNotGlobal[PATH_CHECKSUM_IDX] = pathCalculateChecksum(msgDefNotGlobal);
+
+                                pathSendMsg(msgDefNotGlobal);
+                            }
+                        } else {
+                            
+                            if (jsonGetFieldItem(receivemsg, &testFieldItem)) {
+                                //error
+                                dbgOutputLoc(DBG_LOC_BAD_ERROR - 6);
+                            } else {
+
+                                msgDefNotGlobal[0] = testFieldItem.objectType;
+                                msgDefNotGlobal[1] = testFieldItem.centerX;
+                                msgDefNotGlobal[2] = testFieldItem.centerY;
+                                msgDefNotGlobal[3] = testFieldItem.width;
+                                msgDefNotGlobal[4] = testFieldItem.length;
+                                msgDefNotGlobal[5] = testFieldItem.orientation;
+                                msgDefNotGlobal[6] = testFieldItem.versionNumber;
+
+                                msgDefNotGlobal[PATH_MESSAGE_TYPE_IDX] = PATH_ITEM_TEST;
+                                msgDefNotGlobal[PATH_SOURCE_ID_IDX] = (PATH_COMMUNICATION_ID & 0x00000003) << PATH_SOURCE_ID_OFFSET;
+                                msgDefNotGlobal[PATH_CHECKSUM_IDX] = pathCalculateChecksum(msgDefNotGlobal);
+
+                                pathSendMsg(msgDefNotGlobal);
+                            }
                         }
                     }
 

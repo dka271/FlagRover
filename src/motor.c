@@ -332,12 +332,13 @@ int CalculateDistanceFromPoints(int x1, int y1, int x2, int y2, bool inOrCm){
 //This function calculates the angle between a vector defined by two points and 0 degrees
 int angleOffsetLeft = 52;//This constant was determined through observation and testing
 int angleOffsetRight = 32;//This constant was determined through observation and testing
-int CalculateAngleFromPoints(int x1, int y1, int x2, int y2, float orientation){
+//int CalculateAngleFromPoints(int x1, int y1, int x2, int y2, float orientation){
+int CalculateAngleFromPoints(int x1, int y1, int x2, int y2){
     int ticksToReturn;
     double angleRad = atan2(y2 - y1, x2 - x1);
     float angleDeg = angleRad * (180 / 3.14159);
     ticksToReturn = deg2tickF(angleDeg);
-    ticksToReturn -= deg2tickF(orientation);
+//    ticksToReturn -= deg2tickF(orientation);
     //Account for overshooting
     if (ticksToReturn > 0){
         ticksToReturn -= angleOffsetLeft;
@@ -345,6 +346,19 @@ int CalculateAngleFromPoints(int x1, int y1, int x2, int y2, float orientation){
         ticksToReturn -= angleOffsetRight;
     }
     return ticksToReturn;
+}
+
+//This function adjusts the angle to rotate by the current angle
+int AdjustAngleToRotate(int angleTicks, float orientation){
+    float angle = tick2degF(angleTicks);
+    angle -= orientation;
+    while (angle < -180){
+        angle = angle + 360;
+    }
+    while (angle >= 180){
+        angle = angle - 360;
+    }
+    return deg2tickF(angle);
 }
 
 

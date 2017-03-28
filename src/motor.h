@@ -150,7 +150,11 @@ float tick2cmF(int ticks);
 int CalculateDistanceFromPoints(int x1, int y1, int x2, int y2, bool inOrCm);
 //This function calculates the angle between a vector defined by two points and 0 degrees
 //The return value is in degrees
-int CalculateAngleFromPoints(int x1, int y1, int x2, int y2, float orientation);
+//int CalculateAngleFromPoints(int x1, int y1, int x2, int y2, float orientation);
+int CalculateAngleFromPoints(int x1, int y1, int x2, int y2);
+
+//This function adjusts the angle to rotate by the current angle
+int AdjustAngleToRotate(int angleTicks, float orientation);
 
 //These functions calculate the amount of ticks needed to rotate or travel a certain distance
 int CalculateTicksToTravel(unsigned char distance, bool inOrCm);

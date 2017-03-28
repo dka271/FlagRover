@@ -40,6 +40,13 @@ typedef struct {
 	unsigned char x;
 	unsigned char y;
 } point;
+
+typedef struct {
+    unsigned char x;
+    unsigned char y;
+    unsigned char length;
+    unsigned char width;
+} region;
     
 #define PATH_COMMUNICATION_ID 0
 #define PATH_FLAG_CAPTURE_ID 1
@@ -71,8 +78,19 @@ typedef struct {
 #define IDENTITY_OF_ENEMY_TAGGER_ROVER 7
 #define IDENTITY_OF_ENEMY_COUNTER_ROVER 8
 
+//Unique identifiers for regions
+#define CLOSE_SENSOR_ZONE 0
+#define CLOSE_FLAG_ZONE 1
+#define CLOSE_DEFENSE_ZONE 2
+#define CENTRAL_ZONE 3
+#define FAR_SENSOR_ZONE 4
+#define FAR_FLAG_ZONE 5
+#define FAR_DEFENSE_ZONE 6
+
 //End of path identifier
 #define END_OF_PATH_NUM 125
+
+region regionList[7];
 
 unsigned char pathCalculateChecksum(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]);
     

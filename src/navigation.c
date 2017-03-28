@@ -178,12 +178,20 @@ void NAVIGATION_Tasks ( void )
                     if (moveType[moveCurrentIdx] == ROVER_DIRECTION_LEFT){
                         SetDirectionCounterclockwise();
                         desiredSpeed = ROVER_SPEED_TURNING;
-                        ticksRemaining = moveAmount[moveCurrentIdx];
+                        ticksRemaining = AdjustAngleToRotate(moveAmount[moveCurrentIdx], GetOrientation());
+                        if (ticksRemaining < 0){
+                            ticksRemaining *= -1;
+                            SetDirectionClockwise();
+                        }
                         sprintf(testMsg, "*Command: Left Turn, Ticks = %d~", ticksRemaining);
                     }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_RIGHT){
                         SetDirectionClockwise();
                         desiredSpeed = ROVER_SPEED_TURNING;
-                        ticksRemaining = moveAmount[moveCurrentIdx];
+                        ticksRemaining = AdjustAngleToRotate(moveAmount[moveCurrentIdx], GetOrientation());
+                        if (ticksRemaining < 0){
+                            ticksRemaining *= -1;
+                            SetDirectionCounterclockwise();
+                        }
                         sprintf(testMsg, "*Command: Right Turn, Ticks = %d~", ticksRemaining);
                     }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_FORWARDS){
                         SetDirectionForwards();
@@ -271,7 +279,7 @@ void NAVIGATION_Tasks ( void )
                     navQueueReceiveTest(receivemsg);
                 }
             }else if (msgId == NAV_PATHFINDING_ID){
-                Nop();
+                
 //                ElectromagnetSetOn();
 //                LedSetOn();
                 //Handle stuff from the pathfinding queue
@@ -282,16 +290,16 @@ void NAVIGATION_Tasks ( void )
                 unsigned char endX = receivemsg[3];
                 unsigned char endY = receivemsg[4];
                 
-                Nop();
-//                        HELPMEIMTRAPPED++;
-//        if (HELPMEIMTRAPPED >1) {
-//            Nop();
-//        }
+                if (seqNum == 0){
+                    moveCurrentIdx = 0;
+                    moveLastIdx = 0;
+                    moveGoalIdx = 0xff;
+                }
                 
                 //Get the number of ticks for angle and distance
                 int distanceTicks = CalculateDistanceFromPoints(startX, startY, endX, endY, CALCULATE_IN_CENTIMETERS);
                 //Negative angle means clockwise turn, positive angle means counterclockwise turn
-                int angleTicks = CalculateAngleFromPoints(startX, startY, endX, endY, GetOrientation());
+                int angleTicks = CalculateAngleFromPoints(startX, startY, endX, endY);
                 
                 //FOR TESTING, REMOVE LATER
                 if (MOTOR_PATHFINDING_INTEGRATION_TESTING){
@@ -303,20 +311,18 @@ void NAVIGATION_Tasks ( void )
                 }
                 //END TESTING SECTION
                 
-                Nop();
-                
                 //Put the turn into the movement queue
                 if (moveLastIdx <= moveMaxIdx){
                     if (angleTicks < 0){
                         //Right turn
-                        Nop();
+                        
                         angleTicks *= -1;
                         moveAmount[moveLastIdx] = angleTicks;
                         moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
                         moveLastIdx++;
                     }else{
                         //Left turn
-                        Nop();
+                        
                         moveAmount[moveLastIdx] = angleTicks;
                         moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
                         moveLastIdx++;
@@ -324,7 +330,7 @@ void NAVIGATION_Tasks ( void )
                 }
                 //Put the move into the movement queue
                 if (moveLastIdx <= moveMaxIdx){
-                    Nop();
+                    
                     moveAmount[moveLastIdx] = distanceTicks;
                     moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                     moveLastIdx++;
@@ -333,7 +339,7 @@ void NAVIGATION_Tasks ( void )
                 //Check if this is the goal
                 if (seqNum == END_OF_PATH_NUM){
                     //This is the goal
-                    Nop();
+                    
                     moveGoalIdx = moveLastIdx;
                 }
             }else if (msgId == NAV_PWM_TIMER_ID){

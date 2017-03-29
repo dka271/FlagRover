@@ -57,6 +57,7 @@ void navSendMsgFromISR(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
 void navSendMsg(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
 
 void sendEdgeToNavigationThread(unsigned char seqNum, unsigned char startX, unsigned char startY, unsigned char endX, unsigned char endY);
+void sendLocToNavigationThread(unsigned char x, unsigned char y);
 
 
     /* Provide C++ Compatibility */

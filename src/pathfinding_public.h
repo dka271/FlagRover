@@ -94,6 +94,7 @@ region regionList[7];
 
 unsigned char pathCalculateChecksum(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]);
     
+
 void pathSendMsg(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]);
 
 

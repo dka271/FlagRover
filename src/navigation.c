@@ -101,6 +101,20 @@ void sendEdgeToNavigationThread(unsigned char seqNum, unsigned char startX, unsi
     xQueueSendToBack(navQueue, msg, portMAX_DELAY);
 }
 
+void sendLocToNavigationThread(unsigned char x, unsigned char y) {
+    BaseType_t xHigherPriorityTaskWoken =  pdTRUE;//pdFALSE;
+    char msg[7];
+    unsigned char seqNum = 130;
+    msg[0] = seqNum;
+    msg[1] = x;
+    msg[2] = y;
+    msg[5] = NAV_PATHFINDING_ID << NAV_SOURCE_ID_OFFSET;
+    msg[6] = navCalculateChecksum(msg);
+    
+    //Nop();
+    
+    xQueueSendToBack(navQueue, msg, portMAX_DELAY);
+}
 
 /******************************************************************************
   Function:
@@ -110,6 +124,10 @@ void sendEdgeToNavigationThread(unsigned char seqNum, unsigned char startX, unsi
     See prototype in navigation.h.
  */
 //int HELPMEIMTRAPPED=0;
+
+unsigned char pathMsg[PATH_QUEUE_BUFFER_SIZE];
+
+int TIMER=0;
 
 void NAVIGATION_Tasks ( void )
 {
@@ -168,8 +186,6 @@ void NAVIGATION_Tasks ( void )
                 if (roverStopped >= 10 && moveLastIdx > moveCurrentIdx){
                     //There is a command, and the rover is not moving
                     //Interpret the command and control the rover
-                    
-                    Nop();
                 
                     //FOR TESTING, REMOVE LATER
                     unsigned char testMsg[SEND_QUEUE_BUFFER_SIZE];
@@ -233,14 +249,28 @@ void NAVIGATION_Tasks ( void )
                 }
                 
                 //Handle remaining distance
+                
                 if (GetMotorDirection() == ROVER_DIRECTION_LEFT){
-                    Nop();
                     
                     HandleDistanceRemaining(&desiredSpeed, &ticksRemaining, speed2);
                     
                     //Handle position and orientation
                     HandlePositionAndOrientation(speed2, GetMotorDirection(), CALCULATE_IN_CENTIMETERS);
-                
+                    //Send position to pathfinding thread
+//                    unsigned char pathMsg[PATH_QUEUE_BUFFER_SIZE];
+                    if (TIMER > 30) {
+                        unsigned char intX = 0xff & (int) (GetLocationX());
+                        unsigned char intY = 0xff & (int) (GetLocationY());
+                        pathMsg[0] = intX;
+                        pathMsg[1] = intY;
+                        pathMsg[PATH_SOURCE_ID_IDX] = PATH_NAVIGATION_ID << PATH_SOURCE_ID_OFFSET;
+                        pathMsg[PATH_CHECKSUM_IDX] = pathCalculateChecksum(pathMsg);
+                        pathSendMsg(pathMsg);
+                        TIMER = 0;
+                    } else {
+                        TIMER++;
+                    }
+                    
                     //Handle Daniel's server testing
                     motorTestNavSendSpeed(speed2);
                 }
@@ -258,7 +288,21 @@ void NAVIGATION_Tasks ( void )
                     
                     //Handle position and orientation
                     HandlePositionAndOrientation(speed1, GetMotorDirection(), CALCULATE_IN_CENTIMETERS);
-                
+                    //Send position to pathfinding thread
+//                    unsigned char pathMsg[PATH_QUEUE_BUFFER_SIZE];
+                    if (TIMER > 30) {
+                        unsigned char intX = 0xff & (int) (GetLocationX());
+                        unsigned char intY = 0xff & (int) (GetLocationY());
+                        pathMsg[0] = intX;
+                        pathMsg[1] = intY;
+                        pathMsg[PATH_SOURCE_ID_IDX] = PATH_NAVIGATION_ID << PATH_SOURCE_ID_OFFSET;
+                        pathMsg[PATH_CHECKSUM_IDX] = pathCalculateChecksum(pathMsg);
+                        pathSendMsg(pathMsg);
+                        TIMER = 0;
+                    } else {
+                        TIMER++;
+                    }
+                    
                     //Handle Daniel's server testing
                     motorTestNavSendSpeed(speed1);
                 }
@@ -289,58 +333,76 @@ void NAVIGATION_Tasks ( void )
                 unsigned char startY = receivemsg[2];
                 unsigned char endX = receivemsg[3];
                 unsigned char endY = receivemsg[4];
+                bool addCommand = true;
                 
                 if (seqNum == 0){
+                    //This is a new path, reset the things
                     moveCurrentIdx = 0;
                     moveLastIdx = 0;
                     moveGoalIdx = 0xff;
+                    float startXF = (float) startX;
+                    float startYF = (float) startY;
+                    float firstNodeOffset = sqrt(pow(startXF - GetLocationX(), 2) + pow(startYF - GetLocationY(), 2));
+                    if (firstNodeOffset > 5.0){
+                        startX = 0xff & ((int) GetLocationX());
+                        startY = 0xff & ((int) GetLocationY());
+                    }
+                    ticksRemaining = 0;
+                    desiredSpeed = ROVER_SPEED_STOPPED;
+                }else if (seqNum == 130){
+                    //Update the position
+                    SetLocationX(startX);
+                    SetLocationY(startY);
+                    addCommand = false;
                 }
                 
-                //Get the number of ticks for angle and distance
-                int distanceTicks = CalculateDistanceFromPoints(startX, startY, endX, endY, CALCULATE_IN_CENTIMETERS);
-                //Negative angle means clockwise turn, positive angle means counterclockwise turn
-                int angleTicks = CalculateAngleFromPoints(startX, startY, endX, endY);
-                
-                //FOR TESTING, REMOVE LATER
-                if (MOTOR_PATHFINDING_INTEGRATION_TESTING){
-                    unsigned char testMsg[SEND_QUEUE_BUFFER_SIZE];
-                    sprintf(testMsg, "*Received edge from (%d,%d) to (%d,%d)~",startX,startY,endX,endY);
-                    commSendMsgToWifiQueue(testMsg);
-                    sprintf(testMsg, "*Distance Ticks = %d, Angle Ticks = %d",distanceTicks,angleTicks);
-                    commSendMsgToWifiQueue(testMsg);
-                }
-                //END TESTING SECTION
-                
-                //Put the turn into the movement queue
-                if (moveLastIdx <= moveMaxIdx){
-                    if (angleTicks < 0){
-                        //Right turn
-                        
-                        angleTicks *= -1;
-                        moveAmount[moveLastIdx] = angleTicks;
-                        moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
-                        moveLastIdx++;
-                    }else{
-                        //Left turn
-                        
-                        moveAmount[moveLastIdx] = angleTicks;
-                        moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                if (addCommand){
+                    //Get the number of ticks for angle and distance
+                    int distanceTicks = CalculateDistanceFromPoints(startX, startY, endX, endY, CALCULATE_IN_CENTIMETERS);
+                    //Negative angle means clockwise turn, positive angle means counterclockwise turn
+                    int angleTicks = CalculateAngleFromPoints(startX, startY, endX, endY);
+
+                    //FOR TESTING, REMOVE LATER
+                    if (MOTOR_PATHFINDING_INTEGRATION_TESTING){
+                        unsigned char testMsg[SEND_QUEUE_BUFFER_SIZE];
+                        sprintf(testMsg, "*Received edge from (%d,%d) to (%d,%d) with seqNum(%d)~",startX,startY,endX,endY,seqNum);
+                        commSendMsgToWifiQueue(testMsg);
+                        sprintf(testMsg, "*Distance Ticks = %d, Angle Ticks = %d",distanceTicks,angleTicks);
+                        commSendMsgToWifiQueue(testMsg);
+                    }
+                    //END TESTING SECTION
+
+                    //Put the turn into the movement queue
+                    if (moveLastIdx <= moveMaxIdx){
+                        if (angleTicks < 0){
+                            //Right turn
+
+                            angleTicks *= -1;
+                            moveAmount[moveLastIdx] = angleTicks;
+                            moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+                            moveLastIdx++;
+                        }else{
+                            //Left turn
+
+                            moveAmount[moveLastIdx] = angleTicks;
+                            moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                            moveLastIdx++;
+                        }
+                    }
+                    //Put the move into the movement queue
+                    if (moveLastIdx <= moveMaxIdx){
+
+                        moveAmount[moveLastIdx] = distanceTicks;
+                        moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                         moveLastIdx++;
                     }
-                }
-                //Put the move into the movement queue
-                if (moveLastIdx <= moveMaxIdx){
-                    
-                    moveAmount[moveLastIdx] = distanceTicks;
-                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
-                    moveLastIdx++;
-                }
-                
-                //Check if this is the goal
-                if (seqNum == END_OF_PATH_NUM){
-                    //This is the goal
-                    
-                    moveGoalIdx = moveLastIdx;
+
+                    //Check if this is the goal
+                    if (seqNum == END_OF_PATH_NUM){
+                        //This is the goal
+
+                        moveGoalIdx = moveLastIdx;
+                    }
                 }
             }else if (msgId == NAV_PWM_TIMER_ID){
                 //Handle PWM timer messages

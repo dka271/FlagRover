@@ -199,24 +199,28 @@ int checkIfObjectInStack(unsigned char objectType) {
     return -1;
 }
 
-//Places a fieldItem on the stack, and calculates the respective crossSquare and also places that on a stack
+//Places a fieldItem on the stack, and calculates the respective crossSquare and also places that on a stack//RIGHTHERE
 void storeInFieldItemStack(fieldItem tempFieldItem) {
     int updateLoc = checkIfObjectInStack(tempFieldItem.objectType);
+    
     //-1 means it was not in the stack
     if (updateLoc == -1) {
         fieldItemStack[fieldItemStackTop] = tempFieldItem;
         fieldItemStackTop++;
-        if (tempFieldItem.objectType == 0 || tempFieldItem.objectType == 1) {
+        if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG) {
             //do nothing so nothing is added to crossSquare stack
+        } else if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG_ROVER) {
+            sendLocToNavigationThread(tempFieldItem.centerX, tempFieldItem.centerY);
         } else {
             crossSquareStack[crossSquareStackTop] = convertFieldItemToCrossSquare(tempFieldItem);
             crossSquareStackTop++;
         }
-        
     } else {
         fieldItemStack[updateLoc] = tempFieldItem;
-        if (tempFieldItem.objectType == 0 || tempFieldItem.objectType == 1) {
+        if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG) {
             //do nothing so nothing is updated in the crossSquare stack
+        } else if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG_ROVER) {
+            sendLocToNavigationThread(tempFieldItem.centerX, tempFieldItem.centerY);
         } else {
             crossSquareStack[updateLoc] = convertFieldItemToCrossSquare(tempFieldItem);
         }
@@ -692,6 +696,7 @@ unsigned char monotonicAStar(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES
 //Returns 1 upon failure, 0 upon success
 unsigned char calculatePath() {
     if (halfHeartedAdjacencyList.nodes[0].x == NULL || halfHeartedAdjacencyList.nodes[0].y == NULL || halfHeartedAdjacencyList.nodes[1].x == NULL || halfHeartedAdjacencyList.nodes[1].y == NULL) {
+        Nop();
         return 1;
     }
     unsigned char start = 0;
@@ -701,9 +706,11 @@ unsigned char calculatePath() {
     //If statement runs if AStar fails
     if (monotonicAStar(path, start, goal)) {
 //        testingSendPathOverWifly(path);
+        Nop();
         return 1;
     }
 //    testingSendPathOverWifly(path);
+    Nop();
     sendPathToNavigationThread(path);
     return 0;
 }
@@ -717,12 +724,21 @@ void sendPathToNavigationThread(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NO
             break;
         }
     }
-    
+    Nop();
     unsigned char i;
-    for (i=(numNodesInPath-1); i > 1; i--) {
-        sendEdgeToNavigationThread(numNodesInPath-i-1, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);
+    testingSendEdgeOverWifly(numNodesInPath, numNodesInPath);
+//    for (i=(numNodesInPath-1); i > 1; i--) {
+    for (i=(numNodesInPath-1); i >= 2; i--) {
+        Nop();
+        sendEdgeToNavigationThread(numNodesInPath-i-1, halfHeartedAdjacencyList.nodes[path[i]].x, halfHeartedAdjacencyList.nodes[path[i]].y, halfHeartedAdjacencyList.nodes[path[i-1]].x, halfHeartedAdjacencyList.nodes[path[i-1]].y);
+//        sendEdgeToNavigationThread(numNodesInPath-i-1, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);
+        testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[i]].x, halfHeartedAdjacencyList.nodes[path[i]].y);
+        testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[i-1]].x, halfHeartedAdjacencyList.nodes[path[i-1]].y);
     }
-    sendEdgeToNavigationThread(END_OF_PATH_NUM, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);    
+    sendEdgeToNavigationThread(END_OF_PATH_NUM, halfHeartedAdjacencyList.nodes[path[1]].x, halfHeartedAdjacencyList.nodes[path[1]].y, halfHeartedAdjacencyList.nodes[path[0]].x, halfHeartedAdjacencyList.nodes[path[0]].y);
+//    sendEdgeToNavigationThread(END_OF_PATH_NUM, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);
+    testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[1]].x, halfHeartedAdjacencyList.nodes[path[1]].y);
+    testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[0]].x, halfHeartedAdjacencyList.nodes[path[0]].y);
 }
 
 
@@ -784,10 +800,14 @@ void PATHFINDING_Tasks(void) {
                         } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_FLAG_CAPTURE_SEND) {
 
                         } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_NAVIGATION_SEND) {
-                            //Receiving a feedback loop from the Navigation thread
+                            //Figure out what this is
                             
                         } else if (receivemsg[PATH_MESSAGE_TYPE_IDX] == PATH_ITEM_TEST) {
                             if (receivemsg[0] == 'g') {
+                                PRIVATEDELETEME++;
+                                if (PRIVATEDELETEME > 1) {
+                                    Nop();
+                                }
                                 Nop();
                                 calculatePath();
                             } else if (receivemsg[0] == 'l') {
@@ -816,10 +836,36 @@ void PATHFINDING_Tasks(void) {
                         //Only applicable on flag rover
                     } else if (msgId == PATH_NAVIGATION_ID) {
                         //Handle message from navigation thread
+                        //Receiving a feedback loop from the Navigation thread
+//                        point roverPosition;
+//                        roverPosition.x = receivemsg[0];
+//                        roverPosition.y = receivemsg[1];
+                        
+                        fieldItem newFieldRoverPosition;
+                        Nop();
+                        newFieldRoverPosition.centerX = receivemsg[0];
+                        newFieldRoverPosition.centerY = receivemsg[1];
+                        newFieldRoverPosition.length = 11;
+                        newFieldRoverPosition.width = 10;
+                        newFieldRoverPosition.objectType = IDENTITY_OF_FRIENDLY_FLAG_ROVER; //Change this for other types of field rovers
+                        newFieldRoverPosition.orientation = 200; //This is not used
+                        newFieldRoverPosition.versionNumber = 1; //This is not used
+                        
+//                        storeInFieldItemStack(newFieldRoverPosition);
+                        
+                        int updateLoc = checkIfObjectInStack(newFieldRoverPosition.objectType);
+                        if (updateLoc == -1) {
+                            fieldItemStack[fieldItemStackTop] = newFieldRoverPosition;
+                            fieldItemStackTop++;
+                        } else {
+                                fieldItemStack[updateLoc] = newFieldRoverPosition;
+                        }
+                        
+                        calculateAdjacencyList();
+
                     }
                 }
             }
-
             break;
         }
 

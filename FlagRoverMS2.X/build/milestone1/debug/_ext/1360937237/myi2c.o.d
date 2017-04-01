@@ -1,11 +1,12 @@
-build/milestone1/debug/_ext/1555642536/system_tasks.o:  \
- ../src/system_config/milestone1/system_tasks.c  \
+build/milestone1/debug/_ext/1360937237/myi2c.o:  \
+../src/myi2c.c  \
+ ../src/myi2c.h  \
+../src/debug.h  \
  ../src/system_config/milestone1/system_config.h  \
  ../src/system_config/milestone1/system_definitions.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/common/sys_common.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/common/sys_module.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/clk/sys_clk.h  \
- ../src/system_config/milestone1/system_config.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/osc/plib_osc.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/osc/processor/osc_processor.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/osc/processor/osc_p32xxxx.h  \
@@ -310,10 +311,9 @@ build/milestone1/debug/_ext/1555642536/system_tasks.o:  \
  ../../../../../../../microchip/harmony/v1_09/framework/driver/i2c/drv_i2c_compatibility.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/driver/i2c/drv_i2c_mapping.h  \
  ../src/app.h  \
-../src/system_config/milestone1/system_definitions.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/msg/sys_msg.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/system/msg/config/sys_msg_config.h  \
- ../src/debug.h  \
+ ../src/motor.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/peripheral.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/adc/plib_adc.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/adc/processor/adc_processor.h  \
@@ -834,18 +834,16 @@ build/milestone1/debug/_ext/1555642536/system_tasks.o:  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_processor.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_p32xxxx.h  \
  ../../../../../../../microchip/harmony/v1_09/framework/peripheral/glcd/processor/glcd_p32mx795f512l.h  \
- ../src/motor.h  \
-../src/navigation_public.h  \
+ ../src/navigation_public.h  \
 ../src/communication_public.h  \
- ../src/myjson.h  \
-../src/ms2test.h  \
+../src/myjson.h  \
+ ../src/ms2test.h  \
 ../src/communication.h  \
- ../src/electromagnet.h  \
-../src/navigation.h  \
+../src/electromagnet.h  \
+ ../src/navigation.h  \
 ../src/LED.h  \
-../src/myi2c.h  \
- ../src/linesensing.h  \
 ../src/pathfinding.h  \
-../src/pathfinding_public.h  \
- ../src/communication.h  \
-../src/flagcapture.h 
+ ../src/pathfinding_public.h  \
+../src/communication.h  \
+../src/flagcapture.h  \
+ ../src/linesensing.h 

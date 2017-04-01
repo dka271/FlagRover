@@ -45,6 +45,10 @@
         <Path>Source Files/FreeRTOS/portable/MPLAB/PIC32MX</Path>
       </File>
       <File>
+        <Name>drv_i2c.c</Name>
+        <Path>Source Files/framework/driver/i2c/src/dynamic</Path>
+      </File>
+      <File>
         <Name>mpu_prototypes.h</Name>
         <Path>Header Files/FreeRTOS</Path>
       </File>
@@ -83,6 +87,10 @@
       <File>
         <Name>system.h</Name>
         <Path>Header Files/framework/system</Path>
+      </File>
+      <File>
+        <Name>drv_i2c.h</Name>
+        <Path>Header Files/framework/driver/i2c</Path>
       </File>
       <File>
         <Name>timers.h</Name>
@@ -161,6 +169,10 @@
         <Path>Header Files/FreeRTOS</Path>
       </File>
       <File>
+        <Name>drv_i2c_compatibility.h</Name>
+        <Path>Header Files/framework/driver/i2c</Path>
+      </File>
+      <File>
         <Name>sys_common.h</Name>
         <Path>Header Files/framework/system/common</Path>
       </File>
@@ -175,6 +187,10 @@
       <File>
         <Name>osal_impl_none.h</Name>
         <Path>Header Files/framework/osal/src</Path>
+      </File>
+      <File>
+        <Name>drv_i2c_variant_mapping.h</Name>
+        <Path>Header Files/framework/driver/i2c/src</Path>
       </File>
       <File>
         <Name>sys_clk_mapping.h</Name>
@@ -197,6 +213,10 @@
         <Path>Header Files/framework/gfx</Path>
       </File>
       <File>
+        <Name>drv_i2c_local.h</Name>
+        <Path>Header Files/framework/driver/i2c/src</Path>
+      </File>
+      <File>
         <Name>sys_devcon.h</Name>
         <Path>Header Files/framework/system/devcon</Path>
       </File>
@@ -211,6 +231,10 @@
       <File>
         <Name>sys_module.h</Name>
         <Path>Header Files/framework/system/common</Path>
+      </File>
+      <File>
+        <Name>drv_i2c_mapping.h</Name>
+        <Path>Header Files/framework/driver/i2c</Path>
       </File>
       <File>
         <Name>sys_devcon_pic32mx.c</Name>
@@ -285,7 +309,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/milestone1</Path>
-        <Checksum>94B2B84954E966C88A8055AAEDE61F3C</Checksum>
+        <Checksum>5B2413380DA43AB47C05B6B1BCA5B333</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -329,7 +353,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/milestone1</Path>
-        <Checksum>8CA4BC62FAD346D27C80E28BA97D80EF</Checksum>
+        <Checksum>EBFF8FEAE6BAC00D983E2AEB60E6BD5A</Checksum>
       </Template>
       <Template>
         <Name>flagcapture.h</Name>
@@ -347,13 +371,13 @@
       <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/milestone1</Path>
-        <Checksum>1B698989D98FE64BCC785AA1BF47AA74</Checksum>
+        <Checksum>06DCD141AB8DC29889C3853A6FF9F5FB</Checksum>
         <ProjectFileChecksum>FB0B5FC54763A66DEA6980B6DF310FC0</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_interrupt_a.S</Name>
         <Path>Source Files/app/system_config/milestone1</Path>
-        <Checksum>78633275FC22594EB534EC5D45B120B2</Checksum>
+        <Checksum>BA4EFAAE766D4F8F7DFEFDDADA2B6BAF</Checksum>
       </Template>
       <Template>
         <Name>sys_ports_static.c</Name>
@@ -363,7 +387,7 @@
       <Template>
         <Name>system_config.h</Name>
         <Path>Header Files/app/system_config/milestone1</Path>
-        <Checksum>ABDE7090728CE91D8D612C9CB8543783</Checksum>
+        <Checksum>36477E0CCC3B4CA3F6B36A26BBBB0901</Checksum>
       </Template>
       <Template>
         <Name>rtos_hooks.c</Name>
@@ -395,11 +419,11 @@
         <Include value="../src/system_config/milestone1"/>
       </C32-AS>
       <C32>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src"/>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src\system_config\milestone1"/>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src\milestone1"/>
-        <Include value="C:\microchip\harmony\v1_09\framework"/>
-        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src\system_config\milestone1\framework"/>
+        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src"/>
+        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src/system_config/milestone1"/>
+        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src/milestone1"/>
+        <Include value="C:/microchip/harmony/v1_09/framework"/>
+        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src/system_config/milestone1/framework"/>
         <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
         <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/include"/>
         <Include value="../src/system_config/milestone1"/>

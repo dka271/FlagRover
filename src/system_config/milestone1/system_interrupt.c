@@ -173,6 +173,19 @@ void IntHandlerDrvTmrInstance3(void)
     PLIB_INT_SourceFlagClear(INT_ID_0,INT_SOURCE_TIMER_4);
 }
 
+void IntHandlerDrvI2CInstance0(void)
+{
+    DRV_I2C_Tasks(sysObj.drvI2C0);
+ 
+}
+   
+  
+void IntHandlerDrvI2CInstance1(void) 
+{
+    DRV_I2C_Tasks(sysObj.drvI2C1);
+ 
+}
+
 
 /*******************************************************************************
  End of File

@@ -78,6 +78,9 @@ typedef struct {
 #define IDENTITY_OF_ENEMY_TAGGER_ROVER 7
 #define IDENTITY_OF_ENEMY_COUNTER_ROVER 8
 
+//Identity of this rover (1 = flag, 3 = tagger, 4 = counter (DON'T USE OTHER NUMBERS))
+#define IDENTITY_OF_THIS_ROVER 1
+
 //Unique identifiers for regions
 #define CLOSE_SENSOR_ZONE 0
 #define CLOSE_FLAG_ZONE 1

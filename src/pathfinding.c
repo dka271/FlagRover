@@ -128,6 +128,36 @@ unsigned char cameFrom[MAXIMUM_NUMBER_OF_NODES];
   Remarks:
     See prototype in pathfinding.h.
  */
+unsigned char uniqueIDMapper(unsigned char startingID) {
+    if (IDENTITY_OF_THIS_ROVER == 1) { //1 is for the flag rover
+        //Numbers designed for flag rover, so they don't need to change
+        return startingID;
+    } else if (IDENTITY_OF_THIS_ROVER == 3) { //3 is for the tagger rover
+        if (startingID == IDENTITY_OF_FRIENDLY_FLAG) {
+            return IDENTITY_OF_ENEMY_FLAG_ROVER;
+        } else if (startingID == IDENTITY_OF_FRIENDLY_FLAG_ROVER) {
+            return IDENTITY_OF_FRIENDLY_TAGGER_ROVER;
+        } else if (startingID == IDENTITY_OF_FRIENDLY_TAGGER_ROVER) {
+            return IDENTITY_OF_FRIENDLY_FLAG_ROVER;
+        } else if (startingID == IDENTITY_OF_ENEMY_FLAG_ROVER) {
+            return IDENTITY_OF_FRIENDLY_FLAG;
+        } else { //No need to swap other elements
+            return startingID;
+        }
+    } else if (IDENTITY_OF_THIS_ROVER == 4) { //4 is for the countermeasure rover
+        if (startingID == IDENTITY_OF_FRIENDLY_FLAG) {
+            return IDENTITY_OF_ENEMY_SENSOR_ROVER;
+        } else if (startingID == IDENTITY_OF_ENEMY_SENSOR_ROVER) {
+            return IDENTITY_OF_FRIENDLY_FLAG;
+        } else if (startingID == IDENTITY_OF_FRIENDLY_FLAG_ROVER) {
+            return IDENTITY_OF_FRIENDLY_COUNTER_ROVER;
+        } else if (startingID == IDENTITY_OF_FRIENDLY_COUNTER_ROVER) {
+            return IDENTITY_OF_FRIENDLY_FLAG;
+        } else { //No need to swap other elements
+            return startingID;
+        }
+    }
+}
 
 void PATHFINDING_Initialize(void) {
     /* Place the App state machine in its initial state. */
@@ -207,9 +237,9 @@ void storeInFieldItemStack(fieldItem tempFieldItem) {
     if (updateLoc == -1) {
         fieldItemStack[fieldItemStackTop] = tempFieldItem;
         fieldItemStackTop++;
-        if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG) {
+        if (tempFieldItem.objectType == uniqueIDMapper(IDENTITY_OF_FRIENDLY_FLAG)) {
             //do nothing so nothing is added to crossSquare stack
-        } else if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG_ROVER) {
+        } else if (tempFieldItem.objectType == uniqueIDMapper(IDENTITY_OF_FRIENDLY_FLAG_ROVER)) {
             sendLocToNavigationThread(tempFieldItem.centerX, tempFieldItem.centerY);
         } else {
             crossSquareStack[crossSquareStackTop] = convertFieldItemToCrossSquare(tempFieldItem);
@@ -217,9 +247,9 @@ void storeInFieldItemStack(fieldItem tempFieldItem) {
         }
     } else {
         fieldItemStack[updateLoc] = tempFieldItem;
-        if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG) {
+        if (tempFieldItem.objectType == uniqueIDMapper(IDENTITY_OF_FRIENDLY_FLAG)) {
             //do nothing so nothing is updated in the crossSquare stack
-        } else if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG_ROVER) {
+        } else if (tempFieldItem.objectType == uniqueIDMapper(IDENTITY_OF_FRIENDLY_FLAG_ROVER)) {
             sendLocToNavigationThread(tempFieldItem.centerX, tempFieldItem.centerY);
         } else {
             crossSquareStack[updateLoc] = convertFieldItemToCrossSquare(tempFieldItem);
@@ -234,12 +264,12 @@ void calculateOffsetNodes(fieldItem tempFieldItem) {
     point bottomLeftPoint;
     point bottomRightPoint;
     int offset = NODE_OFFSET;
-    if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG_ROVER) { //This is the flag rover itself CHANGE THIS FOR OTHER ROVERS
+    if (tempFieldItem.objectType == uniqueIDMapper(IDENTITY_OF_FRIENDLY_FLAG_ROVER)) { //This is the flag rover itself CHANGE THIS FOR OTHER ROVERS
         point singleNode;
         singleNode.x = tempFieldItem.centerX;
         singleNode.y = tempFieldItem.centerY;
         halfHeartedAdjacencyList.nodes[0] = singleNode;
-    } else if (tempFieldItem.objectType == IDENTITY_OF_FRIENDLY_FLAG) { 
+    } else if (tempFieldItem.objectType == uniqueIDMapper(IDENTITY_OF_FRIENDLY_FLAG)) { 
         point singleNode;
         singleNode.x = tempFieldItem.centerX;
         singleNode.y = tempFieldItem.centerY;
@@ -847,7 +877,7 @@ void PATHFINDING_Tasks(void) {
                         newFieldRoverPosition.centerY = receivemsg[1];
                         newFieldRoverPosition.length = 11;
                         newFieldRoverPosition.width = 10;
-                        newFieldRoverPosition.objectType = IDENTITY_OF_FRIENDLY_FLAG_ROVER; //Change this for other types of field rovers
+                        newFieldRoverPosition.objectType = uniqueIDMapper(IDENTITY_OF_FRIENDLY_FLAG_ROVER); //Change this for other types of field rovers
                         newFieldRoverPosition.orientation = 200; //This is not used
                         newFieldRoverPosition.versionNumber = 1; //This is not used
                         

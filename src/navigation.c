@@ -60,7 +60,7 @@ void NAVIGATION_Initialize ( void )
     navigationData.state = NAVIGATION_STATE_INIT;
     
     //Initialize the navigation queue
-    navQueue = xQueueCreate(10, sizeof(unsigned char[NAV_QUEUE_BUFFER_SIZE]));
+    navQueue = xQueueCreate(50, sizeof(unsigned char[NAV_QUEUE_BUFFER_SIZE]));
     if(navQueue == 0){
         dbgPauseAll();
     }
@@ -147,6 +147,13 @@ void NAVIGATION_Tasks ( void )
     int m2PID;
     //Location stuff
     SetDirectionForwards();
+    //Line Sensing stuff
+    int ignoringTape = 0;
+    int ignoreTapeCount = 0;
+    int ignoreTapeMax = 40;
+    //Countermeasure stuff
+    LedSetOff();
+    int isCounterMeasuring = 0;
     //Path stuff
     unsigned int moveAmount[100];
     unsigned char moveType[100];
@@ -156,6 +163,34 @@ void NAVIGATION_Tasks ( void )
     unsigned int moveGoalIdx = 0xff;
     unsigned int moveMaxIdx = 99;
     int roverStopped = 0;
+    //I2C Initialization Stuff
+    //Open the I2C
+    int i2cCount = -100;//Set this low so the color sensors are guaranteed to receive power by the time we start initializing them
+    while (DRV_I2C_Status(sysObj.drvI2C0) != SYS_STATUS_READY){
+        //Wait for the I2C to be ready to be opened
+        //FOR TESTING
+        if (COLOR_SENSOR_SERVER_TESTING){
+            unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
+            sprintf(testServerMsg, "Waiting for I2C 1...");
+            commSendMsgToWifiQueue(testServerMsg);
+        }
+        //END FOR TESTING
+    }
+    DRV_HANDLE i2c1_handle = DRV_I2C_Open(DRV_I2C_INDEX_0, DRV_IO_INTENT_READWRITE);
+    while (DRV_I2C_Status(sysObj.drvI2C1) != SYS_STATUS_READY){
+        //Wait for the I2C to be ready to be opened
+        //FOR TESTING
+        if (COLOR_SENSOR_SERVER_TESTING){
+            unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
+            sprintf(testServerMsg, "Waiting for I2C 2...");
+            commSendMsgToWifiQueue(testServerMsg);
+        }
+        //END FOR TESTING
+    }
+    DRV_HANDLE i2c2_handle = DRV_I2C_Open(DRV_I2C_INDEX_1, DRV_IO_INTENT_READWRITE);
+    //Init the state machine
+    DRV_TCS_HandleColorSensor(NULL, COLOR_SENSOR_RESET_STATE_MACHINE);
+    Nop();
 
     dbgOutputLoc(DBG_LOC_NAV_BEFORE_WHILE);
     while(1){
@@ -212,11 +247,13 @@ void NAVIGATION_Tasks ( void )
                     }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_FORWARDS){
                         SetDirectionForwards();
                         desiredSpeed = ROVER_SPEED_STRAIGHT;
+//                        desiredSpeed = ROVER_SPEED_MEDIUM;
                         ticksRemaining = moveAmount[moveCurrentIdx];
                         sprintf(testMsg, "*Command: Move Straight, Ticks = %d~", ticksRemaining);
                     }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_BACKWARDS){
                         SetDirectionBackwards();
                         desiredSpeed = ROVER_SPEED_STRAIGHT;
+//                        desiredSpeed = ROVER_SPEED_MEDIUM;
                         ticksRemaining = moveAmount[moveCurrentIdx];
                         sprintf(testMsg, "*Command: Move Backward, Ticks = %d~", ticksRemaining);
                     }
@@ -238,6 +275,7 @@ void NAVIGATION_Tasks ( void )
                     moveCurrentIdx = 0;
                     moveLastIdx = 0;
                     moveGoalIdx = 0xff;
+                    isCounterMeasuring = 1;
                 
                     //FOR TESTING, REMOVE LATER
                     if (MOTOR_PATHFINDING_INTEGRATION_TESTING){
@@ -246,6 +284,17 @@ void NAVIGATION_Tasks ( void )
                         commSendMsgToWifiQueue(testMsg);
                     }
                     //END TESTING SECTION
+                }
+                
+                //Handle Countermeasuring
+                if (isCounterMeasuring == 1){
+                    LedSetOn();
+                    isCounterMeasuring = 2;
+                }else if (isCounterMeasuring == 2){
+                    LedSetOff();
+                    isCounterMeasuring = 1;
+                }else if (isCounterMeasuring == 0){
+                    LedSetOff();
                 }
                 
                 //Handle remaining distance
@@ -313,12 +362,93 @@ void NAVIGATION_Tasks ( void )
                 if (UNIT_TESTING){
                     encoderSpeedTest(speed1);
                 }
+                
+                //Ignore tape for 4 seconds
+                ignoreTapeCount++;
+                if (ignoreTapeCount >= ignoreTapeMax){
+                    ignoringTape = 0;
+                }
             }else if (msgId == NAV_COLOR_SENSOR_1_ID){
-                //Handle stuff from color sensor 1
+                //Handle stuff from color sensor 1 (front left)
+                if (!ignoringTape && receivemsg[0] == COLOR_IS_BLUE){
+                    //Stop the rover from moving, and kill the current path
+                    moveCurrentIdx = 0;
+                    moveLastIdx = 0;
+                    moveGoalIdx = 0xff;
+                    isCounterMeasuring = 0;
+                    //Tell the rover to back up and turn
+                    moveAmount[moveLastIdx] = cm2tick(1);
+                    moveType[moveLastIdx] = ROVER_DIRECTION_BACKWARDS;
+                    moveLastIdx++;
+//                    moveAmount[moveLastIdx] = deg2tick(30);
+//                    moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+//                    moveLastIdx++;
+//                    moveAmount[moveLastIdx] = in2tick(1);
+//                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
+//                    moveLastIdx++;
+                    moveGoalIdx = moveLastIdx;
+                    ignoringTape = 1;
+                    ignoreTapeCount = 0;
+                    roverStopped = 20;
+//                    ticksRemaining = moveAmount[0];
+//                    desiredSpeed = ROVER_SPEED_STRAIGHT;
+                    ticksRemaining = 0;
+                    desiredSpeed = ROVER_SPEED_STOPPED;
+                    SetDirectionBackwards();
+                }
+                //FOR TESTING
+                if (COLOR_SENSOR_SERVER_TESTING){
+                    unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
+                    sprintf(testServerMsg, "*{Message from Color Sensor 1: %d}~", receivemsg[0]);
+//                    commSendMsgToWifiQueue(testServerMsg);
+                }
+                //END FOR TESTING
             }else if (msgId == NAV_COLOR_SENSOR_2_ID){
-                //Handle stuff from color sensor 2
+                //Handle stuff from color sensor 2 (front right)
+                if (!ignoringTape && receivemsg[0] == COLOR_IS_BLUE){
+                    //Stop the rover from moving, and kill the current path
+                    moveCurrentIdx = 0;
+                    moveLastIdx = 0;
+                    moveGoalIdx = 0xff;
+                    isCounterMeasuring = 0;
+                    //Tell the rover to back up and turn
+                    moveAmount[moveLastIdx] = cm2tick(1);
+                    moveType[moveLastIdx] = ROVER_DIRECTION_BACKWARDS;
+                    moveLastIdx++;
+//                    moveAmount[moveLastIdx] = deg2tick(30);
+//                    moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+//                    moveLastIdx++;
+//                    moveAmount[moveLastIdx] = in2tick(1);
+//                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
+//                    moveLastIdx++;
+                    moveGoalIdx = moveLastIdx;
+                    ignoringTape = 1;
+                    ignoreTapeCount = 0;
+                    roverStopped = 20;
+//                    ticksRemaining = moveAmount[0];
+//                    desiredSpeed = ROVER_SPEED_STRAIGHT;
+                    ticksRemaining = 0;
+                    desiredSpeed = ROVER_SPEED_STOPPED;
+                    SetDirectionBackwards();
+                }
+                //FOR TESTING
+                if (COLOR_SENSOR_SERVER_TESTING){
+                    unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
+                    sprintf(testServerMsg, "*{Message from Color Sensor 2: %d}~", receivemsg[0]);
+//                    commSendMsgToWifiQueue(testServerMsg);
+                }
+                //END FOR TESTING
             }else if (msgId == NAV_COLOR_SENSOR_3_ID){
-                //Handle stuff from color sensor 3
+                //Handle stuff from color sensor 3 (back right, sensor rover only)
+                //FOR TESTING
+                if (COLOR_SENSOR_SERVER_TESTING){
+                    unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
+                    sprintf(testServerMsg, "*{Message from Color Sensor 3: %d}~", receivemsg[0]);
+//                    commSendMsgToWifiQueue(testServerMsg);
+                }
+                //END FOR TESTING
+                
+                //Milestone 2 unit testing code:
                 if (UNIT_TESTING){
                     navQueueReceiveTest(receivemsg);
                 }
@@ -335,7 +465,7 @@ void NAVIGATION_Tasks ( void )
                 unsigned char endY = receivemsg[4];
                 bool addCommand = true;
                 
-                if (seqNum == 0){
+                if (seqNum == 0 || (seqNum == 125 && (moveLastIdx == 0 || moveGoalIdx == moveLastIdx))){
                     //This is a new path, reset the things
                     moveCurrentIdx = 0;
                     moveLastIdx = 0;
@@ -343,16 +473,22 @@ void NAVIGATION_Tasks ( void )
                     float startXF = (float) startX;
                     float startYF = (float) startY;
                     float firstNodeOffset = sqrt(pow(startXF - GetLocationX(), 2) + pow(startYF - GetLocationY(), 2));
-                    if (firstNodeOffset > 5.0){
-                        startX = 0xff & ((int) GetLocationX());
-                        startY = 0xff & ((int) GetLocationY());
+                    startX = 0xff & ((int) GetLocationX());
+                    startY = 0xff & ((int) GetLocationY());
+                    if (firstNodeOffset > 7.5){
+                        //Drop paths that have bad position
+                        addCommand = false;
                     }
                     ticksRemaining = 0;
                     desiredSpeed = ROVER_SPEED_STOPPED;
+                    isCounterMeasuring = 0;
                 }else if (seqNum == 130){
                     //Update the position
                     SetLocationX(startX);
                     SetLocationY(startY);
+                    addCommand = false;
+                }else if (seqNum > 0 && moveLastIdx == 0){
+                    //The start of this path was dropped, drop the rest of the path
                     addCommand = false;
                 }
                 
@@ -400,7 +536,6 @@ void NAVIGATION_Tasks ( void )
                     //Check if this is the goal
                     if (seqNum == END_OF_PATH_NUM){
                         //This is the goal
-
                         moveGoalIdx = moveLastIdx;
                     }
                 }
@@ -411,6 +546,17 @@ void NAVIGATION_Tasks ( void )
                 pwmCount++;
                 if (pwmCount >= 25){
                     pwmCount = 0;
+                }
+                
+                
+                //Handle color sensor communication state machine
+                i2cCount++;
+                if (i2cCount >= 50){
+                    int currentState2 = DRV_TCS_HandleColorSensor(i2c1_handle, COLOR_SENSOR_ID_2);
+                    i2cCount = 0;
+                    Nop();
+                }else if (i2cCount == 25){
+                    int currentState1 = DRV_TCS_HandleColorSensor(i2c2_handle, COLOR_SENSOR_ID_1);
                 }
             }else if (msgId == NAV_OTHER_ID){
                 //Handle a message from another source

@@ -151,9 +151,6 @@ void NAVIGATION_Tasks ( void )
     int ignoringTape = 0;
     int ignoreTapeCount = 0;
     int ignoreTapeMax = 40;
-    //Countermeasure stuff
-    LedSetOff();
-    int isCounterMeasuring = 0;
     //Path stuff
     unsigned int moveAmount[100];
     unsigned char moveType[100];
@@ -284,17 +281,6 @@ void NAVIGATION_Tasks ( void )
                         commSendMsgToWifiQueue(testMsg);
                     }
                     //END TESTING SECTION
-                }
-                
-                //Handle Countermeasuring
-                if (isCounterMeasuring == 1){
-                    LedSetOn();
-                    isCounterMeasuring = 2;
-                }else if (isCounterMeasuring == 2){
-                    LedSetOff();
-                    isCounterMeasuring = 1;
-                }else if (isCounterMeasuring == 0){
-                    LedSetOff();
                 }
                 
                 //Handle remaining distance

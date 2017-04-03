@@ -90,6 +90,10 @@ typedef struct {
 #define FAR_FLAG_ZONE 5
 #define FAR_DEFENSE_ZONE 6
 
+//Maximum node locations
+#define MAX_LENGTH_OF_FIELD 110
+#define MAX_WIDTH_OF_FIELD 64
+
 //End of path identifier
 #define END_OF_PATH_NUM 125
 

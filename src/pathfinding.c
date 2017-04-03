@@ -191,10 +191,10 @@ unsigned char pathCalculateChecksum(unsigned char msg[PATH_QUEUE_BUFFER_SIZE]) {
 }
 
 crossSquare convertFieldItemToCrossSquare(fieldItem tempFieldItem) {
-    unsigned char lowX = tempFieldItem.centerX - (tempFieldItem.width / 2);
-    unsigned char highX = tempFieldItem.centerX + (tempFieldItem.width / 2);
-    unsigned char lowY = tempFieldItem.centerY - (tempFieldItem.length / 2);
-    unsigned char highY = tempFieldItem.centerY + (tempFieldItem.length / 2);
+    unsigned char lowX = tempFieldItem.centerX - (tempFieldItem.width / 2)-4;
+    unsigned char highX = tempFieldItem.centerX + (tempFieldItem.width / 2)+4;
+    unsigned char lowY = tempFieldItem.centerY - (tempFieldItem.length / 2)-4;
+    unsigned char highY = tempFieldItem.centerY + (tempFieldItem.length / 2)+4;
     point topLeft = convertXAndYToPoint(lowX, highY);
     point bottomRight = convertXAndYToPoint(highX, lowY);
     return convertPointsToCrossSquare(topLeft, bottomRight);
@@ -332,6 +332,9 @@ void fillAdjacencyNodes() {
 bool checkIfNodeValid(point tempPoint) {
     //Check for intersections or within bounds of objects
     int i;
+    if (tempPoint.x > MAX_WIDTH_OF_FIELD || tempPoint.y > MAX_LENGTH_OF_FIELD) {
+        return false;
+    }
     for (i = 0; i < fieldItemStackTop; i++) {
         if (checkIfPointWithinFieldItem(tempPoint, fieldItemStack[i])) {
             return false;

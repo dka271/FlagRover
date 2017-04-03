@@ -150,8 +150,8 @@ bool DoWeCrossLineQuestionMark(){
         case (CROSSED_2_LINES):{
             region farFlag = regionList[FAR_FLAG_ZONE];
             unsigned char farFlagY = (farFlag.y - (farFlag.length >> 1)) << 1;
-            unsigned char minX = (farFlag.x - (farFlag.width >> 1)) << 1;
-            unsigned char maxX = (farFlag.x + (farFlag.width >> 1)) << 1;
+            unsigned char minX = ((farFlag.x - (farFlag.width >> 1)) << 1) - 5;
+            unsigned char maxX = ((farFlag.x + (farFlag.width >> 1)) << 1) + 5;
             unsigned char ourY = ((unsigned char) GetLocationY());
             unsigned char ourX = ((unsigned char) GetLocationX());
             
@@ -303,9 +303,15 @@ void NAVIGATION_Tasks ( void )
                     
                     if (moveType[moveCurrentIdx] == ROVER_DIRECTION_LEFT){
                         SetDirectionCounterclockwise();
-                        desiredSpeed = ROVER_SPEED_TURNING;
-//                        ticksRemaining = AdjustAngleToRotate(moveAmount[moveCurrentIdx], GetOrientation());
                         ticksRemaining = moveAmount[moveCurrentIdx];
+                        int minRotation = deg2tickF(30);
+                        if (ticksRemaining >= minRotation){
+                            //Normal turning speed
+                            desiredSpeed = ROVER_SPEED_TURNING;
+                        }else{
+                            //Slow turning speed
+                            desiredSpeed = ROVER_SPEED_SLOW_TURNING;
+                        }
                         if (ticksRemaining < 0){
                             ticksRemaining *= -1;
                             SetDirectionClockwise();
@@ -313,10 +319,15 @@ void NAVIGATION_Tasks ( void )
                         sprintf(testMsg, "*Command: Left Turn, Ticks = %d~", ticksRemaining);
                     }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_RIGHT){
                         SetDirectionClockwise();
-//                        float minRotation = deg2tickF(30);
-                        desiredSpeed = ROVER_SPEED_TURNING;
-//                        ticksRemaining = AdjustAngleToRotate(moveAmount[moveCurrentIdx], GetOrientation());
                         ticksRemaining = moveAmount[moveCurrentIdx];
+                        int minRotation = deg2tickF(30);
+                        if (ticksRemaining >= minRotation){
+                            //Normal turning speed
+                            desiredSpeed = ROVER_SPEED_TURNING;
+                        }else{
+                            //Slow turning speed
+                            desiredSpeed = ROVER_SPEED_SLOW_TURNING;
+                        }
                         if (ticksRemaining < 0){
                             ticksRemaining *= -1;
                             SetDirectionCounterclockwise();
@@ -467,6 +478,16 @@ void NAVIGATION_Tasks ( void )
                         }else if (locationState == CROSSED_2_LINES){
                             moveAmount[moveLastIdx] = cm2tick(8);
                         }else if (locationState == CROSSED_1_LINES){
+                            //Orient ourselves towards the line
+                            int angleTicks = deg2tick(90);
+                            angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                            moveAmount[moveLastIdx] = angleTicks;
+                            if (INVERTED_X_AXIS){
+                                moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+                            }else{
+                                moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                            }
+                            moveLastIdx++;
                             moveAmount[moveLastIdx] = cm2tick(30);
                         }else{
                             moveAmount[moveLastIdx] = cm2tick(20);
@@ -603,6 +624,16 @@ void NAVIGATION_Tasks ( void )
                         }else if (locationState == CROSSED_2_LINES){
                             moveAmount[moveLastIdx] = cm2tick(8);
                         }else if (locationState == CROSSED_1_LINES){
+                            //Orient ourselves towards the line
+                            int angleTicks = deg2tick(90);
+                            angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                            moveAmount[moveLastIdx] = angleTicks;
+                            if (INVERTED_X_AXIS){
+                                moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                            }else{
+                                moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+                            }
+                            moveLastIdx++;
                             moveAmount[moveLastIdx] = cm2tick(30);
                         }else{
                             moveAmount[moveLastIdx] = cm2tick(20);

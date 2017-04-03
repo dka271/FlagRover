@@ -136,6 +136,7 @@ DRV_I2C_BUFFER_HANDLE DRV_TCS_GetColors(DRV_HANDLE i2c_handle, unsigned char dat
 //Returns the current state of the communication
 int HandlerState[3];
 int PreviousState[3];
+unsigned char OnBlueTape[3];
 #define COLOR_DATA_LENGTH 8
 unsigned char ColorData1[COLOR_DATA_LENGTH];
 unsigned char ColorData2[COLOR_DATA_LENGTH];
@@ -394,18 +395,24 @@ int DRV_TCS_HandleColorSensor(DRV_HANDLE i2c_handle, int ColorSensorNumber){
                 if (ColorSensorNumber == COLOR_SENSOR_ID_1){
                     //Front Left Color Sensor
                     if (ColorIsBlue(r,g,b,c)){
-                        navMsg[0] = COLOR_IS_BLUE;
-                        navMsg[1] = COLOR_DATA_ID;
-                        navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_1_ID << NAV_SOURCE_ID_OFFSET;
-                        navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
-                        navSendMsg(navMsg);
+                        if (OnBlueTape[0] == 0){
+                            navMsg[0] = COLOR_IS_BLUE;
+                            navMsg[1] = COLOR_DATA_ID;
+                            navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_1_ID << NAV_SOURCE_ID_OFFSET;
+                            navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
+                            navSendMsg(navMsg);
+                            OnBlueTape[0] = 1;
+                        }
                     }else{
-                        navMsg[0] = 0;
+                        if (OnBlueTape[0] == 1){
+                            navMsg[0] = 0;
+                            navMsg[1] = COLOR_DATA_ID;
+                            navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_1_ID << NAV_SOURCE_ID_OFFSET;
+                            navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
+                            navSendMsg(navMsg);
+                            OnBlueTape[0] = 0;
+                        }
                     }
-//                    navMsg[1] = COLOR_DATA_ID;
-//                    navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_1_ID << NAV_SOURCE_ID_OFFSET;
-//                    navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
-//                    navSendMsg(navMsg);
                     //FOR TESTING
                     if (COLOR_SENSOR_SERVER_TESTING){
                         unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
@@ -420,18 +427,24 @@ int DRV_TCS_HandleColorSensor(DRV_HANDLE i2c_handle, int ColorSensorNumber){
                 }else if (ColorSensorNumber == COLOR_SENSOR_ID_2){
                     //Front Right Color Sensor
                     if (ColorIsBlue(r,g,b,c)){
-                        navMsg[0] = COLOR_IS_BLUE;
-                        navMsg[1] = COLOR_DATA_ID;
-                        navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_2_ID << NAV_SOURCE_ID_OFFSET;
-                        navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
-                        navSendMsg(navMsg);
+                        if (OnBlueTape[1] == 0){
+                            navMsg[0] = COLOR_IS_BLUE;
+                            navMsg[1] = COLOR_DATA_ID;
+                            navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_2_ID << NAV_SOURCE_ID_OFFSET;
+                            navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
+                            navSendMsg(navMsg);
+                            OnBlueTape[1] = 1;
+                        }
                     }else{
-                        navMsg[0] = 0;
+                        if (OnBlueTape[1] == 1){
+                            navMsg[0] = 0;
+                            navMsg[1] = COLOR_DATA_ID;
+                            navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_2_ID << NAV_SOURCE_ID_OFFSET;
+                            navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
+                            navSendMsg(navMsg);
+                            OnBlueTape[1] = 0;
+                        }
                     }
-//                    navMsg[1] = COLOR_DATA_ID;
-//                    navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_2_ID << NAV_SOURCE_ID_OFFSET;
-//                    navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
-//                    navSendMsg(navMsg);
                     //FOR TESTING
                     if (COLOR_SENSOR_SERVER_TESTING){
                         unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
@@ -446,18 +459,24 @@ int DRV_TCS_HandleColorSensor(DRV_HANDLE i2c_handle, int ColorSensorNumber){
                 }else if (ColorSensorNumber == COLOR_SENSOR_ID_3){
                     //Back Right Color Sensor
                     if (ColorIsBlue(r,g,b,c)){
-                        navMsg[0] = COLOR_IS_BLUE;
-                        navMsg[1] = COLOR_DATA_ID;
-                        navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_3_ID << NAV_SOURCE_ID_OFFSET;
-                        navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
-                        navSendMsg(navMsg);
+                        if (OnBlueTape[2] == 0){
+                            navMsg[0] = COLOR_IS_BLUE;
+                            navMsg[1] = COLOR_DATA_ID;
+                            navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_2_ID << NAV_SOURCE_ID_OFFSET;
+                            navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
+                            navSendMsg(navMsg);
+                            OnBlueTape[2] = 1;
+                        }
                     }else{
-                        navMsg[0] = 0;
+                        if (OnBlueTape[2] == 1){
+                            navMsg[0] = 0;
+                            navMsg[1] = COLOR_DATA_ID;
+                            navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_2_ID << NAV_SOURCE_ID_OFFSET;
+                            navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
+                            navSendMsg(navMsg);
+                            OnBlueTape[2] = 0;
+                        }
                     }
-//                    navMsg[1] = COLOR_DATA_ID;
-//                    navMsg[NAV_SOURCE_ID_IDX] = NAV_COLOR_SENSOR_3_ID << NAV_SOURCE_ID_OFFSET;
-//                    navMsg[NAV_CHECKSUM_IDX] = navCalculateChecksum(navMsg);
-//                    navSendMsg(navMsg);
                     //FOR TESTING
                     if (COLOR_SENSOR_SERVER_TESTING){
                         unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];

@@ -52,6 +52,8 @@ extern "C" {
 /* Section: Constants                                                         */
 /* ************************************************************************** */
 /* ************************************************************************** */
+#define INVERTED_X_AXIS 1
+    
 #define MOTOR_2_FORWARDS 0
 #define MOTOR_2_BACKWARDS 1
 #define MOTOR_1_FORWARDS 0

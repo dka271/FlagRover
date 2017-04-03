@@ -86,6 +86,14 @@ extern "C" {
 // *****************************************************************************
 // *****************************************************************************
 
+#define CROSSED_0_LINES 0
+#define CROSSED_1_LINES 1
+#define CROSSED_2_LINES 2
+#define CROSSED_3_LINES 3
+    
+    
+bool DoWeCrossLineQuestionMark();
+
 // *****************************************************************************
 /* Application states
 

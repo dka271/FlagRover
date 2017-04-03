@@ -68,11 +68,63 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "flagcapture_public.h"
 #include "system_definitions.h"
 
+//Declare privates
+#define ADC_NUM_SAMPLE_PER_AVERAGE 16
+#define PIXY_CENTER_VALUE 512
+#define PIXY_THRESHOLD_VALUE 20
+
 // *****************************************************************************
 // *****************************************************************************
 // Section: System Interrupt Vector Functions
 // *****************************************************************************
 // *****************************************************************************
+int incr = 0;
+bool flagDetected = false;
+
+void IntHandlerDrvAdc(void) {
+    /* Clear ADC Interrupt Flag */
+
+    ADC_SAMPLE pixy = 0;
+    uint8_t i = 0;
+
+    for (i = 0; i < ADC_NUM_SAMPLE_PER_AVERAGE; i ++) {
+        pixy += PLIB_ADC_ResultGetByIndex(ADC_ID_1, i);
+    }  
+
+    pixy = pixy / 16;
+    
+
+    unsigned char sendPixy[NAV_QUEUE_BUFFER_SIZE];
+    
+    
+    sendPixy[0] = (pixy & 0xFF00) >> 8;
+    sendPixy[1] = (pixy & 0x00FF);
+
+    //USE NAV MESSAGE FORMAT
+//    sendPixy[MAP_SOURCE_ID_IDX] = (MAP_PIXY_CAM_ID & (MAP_SOURCE_ID_MASK >> MAP_SOURCE_ID_OFFSET)) << MAP_SOURCE_ID_OFFSET;
+    
+    
+    if (incr == 25) {
+        
+        //SEND TO NAV OR WHEREVER THA FUCK
+        //THERE IS NO MAPPING
+//            mapSendMsgFromISR(sendPixy);
+        unsigned char msg[NAV_QUEUE_BUFFER_SIZE];
+        msg[0] = sendPixy[0];
+        msg[1] = sendPixy[1];
+        msg[NAV_SOURCE_ID_IDX] = NAV_PIXY_CAM_ID << NAV_SOURCE_ID_OFFSET;
+        msg[NAV_CHECKSUM_IDX] = navCalculateChecksum(msg);
+        navSendMsgFromISR(msg);
+    } else {
+        incr++;
+    }
+
+
+
+
+    PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_ADC_1);
+    PLIB_ADC_SampleAutoStartEnable(ADC_ID_1);
+}
 
 void IntHandlerDrvTmrInstance0(void) {
     dbgOutputLoc(DBG_LOC_TMR0_ISR_ENTER);

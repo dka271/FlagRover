@@ -148,101 +148,157 @@ void HandleDistanceRemaining(int *desiredSpeed, int *ticksRemaining, int changeI
 
 //This function handles position and orientation updates
 void HandlePositionAndOrientation(int speed, int direction, bool inOrCm){
-    Nop();
-    if (direction == ROVER_DIRECTION_RIGHT){
-        //Handle clockwise rotation
-        Nop();
-        float orientation = GetOrientation();
-//        float orientation = currentOrientation;
-        float changeInAngle = tick2degF(speed);
-        orientation = orientation - changeInAngle;
-        while (orientation < -180){
-            orientation = orientation + 360;
+    //Handle this differently if we are on the inverted X axis grid
+    if (INVERTED_X_AXIS){
+        if (direction == ROVER_DIRECTION_RIGHT){
+            //Handle counterclockwise rotation
+            float orientation = GetOrientation();
+            float changeInAngle = tick2degF(speed);
+            orientation = orientation + changeInAngle;
+            while (orientation < -180){
+                orientation = orientation + 360;
+            }
+            while (orientation >= 180){
+                orientation = orientation - 360;
+            }
+            SetOrientation(orientation);
+        }else if (direction == ROVER_DIRECTION_LEFT){
+            //Handle clockwise rotation
+            float orientation = GetOrientation();
+            float changeInAngle = tick2degF(speed);
+            orientation = orientation - changeInAngle;
+            while (orientation < -180){
+                orientation = orientation + 360;
+            }
+            while (orientation >= 180){
+                orientation = orientation - 360;
+            }
+            SetOrientation(orientation);
+        }else if (direction == ROVER_DIRECTION_FORWARDS){
+            //Handle forward movement
+            float X = GetLocationX();
+            float Y = GetLocationY();
+            float orientation = GetOrientation();
+            float changeInDistance;
+            if (inOrCm){
+                changeInDistance = tick2inF(speed);
+            }else{
+                changeInDistance = tick2cmF(speed);
+            }
+            float rads = orientation * (3.14159/180);
+            float changeInX = changeInDistance * cos(rads);
+            float changeInY = changeInDistance * sin(rads);
+            X += changeInX;
+            Y += changeInY;
+            SetLocationX(X);
+            SetLocationY(Y);
+        }else if (direction == ROVER_DIRECTION_BACKWARDS){
+            //Handle backward movement
+            float X = GetLocationX();
+            float Y = GetLocationY();
+            float orientation = GetOrientation();
+            float changeInDistance;
+            if (inOrCm){
+                changeInDistance = tick2inF(speed);
+            }else{
+                changeInDistance = tick2cmF(speed);
+            }
+            float rads = orientation * (3.14159/180);
+            float changeInX = changeInDistance * cos(rads);
+            float changeInY = changeInDistance * sin(rads);
+            X -= changeInX;
+            Y -= changeInY;
+            SetLocationX(X);
+            SetLocationY(Y);
         }
-        while (orientation >= 180){
-            orientation = orientation - 360;
+    }else{
+        if (direction == ROVER_DIRECTION_RIGHT){
+            //Handle clockwise rotation
+            float orientation = GetOrientation();
+            float changeInAngle = tick2degF(speed);
+            orientation = orientation - changeInAngle;
+            while (orientation < -180){
+                orientation = orientation + 360;
+            }
+            while (orientation >= 180){
+                orientation = orientation - 360;
+            }
+            SetOrientation(orientation);
+        }else if (direction == ROVER_DIRECTION_LEFT){
+            //Handle counterclockwise rotation
+            float orientation = GetOrientation();
+            float changeInAngle = tick2degF(speed);
+            orientation = orientation + changeInAngle;
+            while (orientation < -180){
+                orientation = orientation + 360;
+            }
+            while (orientation >= 180){
+                orientation = orientation - 360;
+            }
+            SetOrientation(orientation);
+        }else if (direction == ROVER_DIRECTION_FORWARDS){
+            //Handle forward movement
+            float X = GetLocationX();
+            float Y = GetLocationY();
+            float orientation = GetOrientation();
+            float changeInDistance;
+            if (inOrCm){
+                changeInDistance = tick2inF(speed);
+            }else{
+                changeInDistance = tick2cmF(speed);
+            }
+            float rads = orientation * (3.14159/180);
+            float changeInX = changeInDistance * cos(rads);
+            float changeInY = changeInDistance * sin(rads);
+            X += changeInX;
+            Y += changeInY;
+            SetLocationX(X);
+            SetLocationY(Y);
+        }else if (direction == ROVER_DIRECTION_BACKWARDS){
+            //Handle backward movement
+            float X = GetLocationX();
+            float Y = GetLocationY();
+            float orientation = GetOrientation();
+            float changeInDistance;
+            if (inOrCm){
+                changeInDistance = tick2inF(speed);
+            }else{
+                changeInDistance = tick2cmF(speed);
+            }
+            float rads = orientation * (3.14159/180);
+            float changeInX = changeInDistance * cos(rads);
+            float changeInY = changeInDistance * sin(rads);
+            X -= changeInX;
+            Y -= changeInY;
+            SetLocationX(X);
+            SetLocationY(Y);
         }
-        SetOrientation(orientation);
-//        currentOrientation = orientation;
-    }else if (direction == ROVER_DIRECTION_LEFT){
-        //Handle counterclockwise rotation
-        Nop();
-        float orientation = GetOrientation();
-//        float orientation = currentOrientation;
-        float changeInAngle = tick2degF(speed);
-        orientation = orientation + changeInAngle;
-        while (orientation < -180){
-            orientation = orientation + 360;
-        }
-        while (orientation >= 180){
-            orientation = orientation - 360;
-        }
-        SetOrientation(orientation);
-//        currentOrientation = orientation;
-    }else if (direction == ROVER_DIRECTION_FORWARDS){
-        //Handle forward movement
-        Nop();
-        float X = GetLocationX();
-        float Y = GetLocationY();
-        float orientation = GetOrientation();
-//        float X = currentPositionX;
-//        float Y = currentPositionY;
-//        float orientation = currentOrientation;
-        float changeInDistance;
-        if (inOrCm){
-            changeInDistance = tick2inF(speed);
-        }else{
-            changeInDistance = tick2cmF(speed);
-        }
-        float rads = orientation * (3.14159/180);
-        float changeInX = changeInDistance * cos(rads);
-        float changeInY = changeInDistance * sin(rads);
-        X += changeInX;
-        Y += changeInY;
-        SetLocationX(X);
-        SetLocationY(Y);
-//        currentPositionX = X;
-//        currentPositionY = Y;
-        Nop();
-    }else if (direction == ROVER_DIRECTION_BACKWARDS){
-        //Handle backward movement
-        Nop();
-        float X = GetLocationX();
-        float Y = GetLocationY();
-        float orientation = GetOrientation();
-//        float X = currentPositionX;
-//        float Y = currentPositionY;
-//        float orientation = currentOrientation;
-        float changeInDistance;
-        if (inOrCm){
-            changeInDistance = tick2inF(speed);
-        }else{
-            changeInDistance = tick2cmF(speed);
-        }
-        float rads = orientation * (3.14159/180);
-        float changeInX = changeInDistance * cos(rads);
-        float changeInY = changeInDistance * sin(rads);
-        X -= changeInX;
-        Y -= changeInY;
-        SetLocationX(X);
-        SetLocationY(Y);
-//        currentPositionX = X;
-//        currentPositionY = Y;
     }
-//    return result;
 }
 
 
 //These functions handle setting the direction of the rover
 void SetDirectionClockwise(){
-    Motor1SetDirection(MOTOR_1_BACKWARDS);
-    Motor2SetDirection(MOTOR_2_FORWARDS);
-    currentDirection = ROVER_DIRECTION_RIGHT;
+    if (!INVERTED_X_AXIS){
+        Motor1SetDirection(MOTOR_1_BACKWARDS);
+        Motor2SetDirection(MOTOR_2_FORWARDS);
+        currentDirection = ROVER_DIRECTION_RIGHT;
+    }else{
+        Motor1SetDirection(MOTOR_1_FORWARDS);
+        Motor2SetDirection(MOTOR_2_BACKWARDS);
+        currentDirection = ROVER_DIRECTION_LEFT;
+    }
 }
 void SetDirectionCounterclockwise(){
-    Motor1SetDirection(MOTOR_1_FORWARDS);
-    Motor2SetDirection(MOTOR_2_BACKWARDS);
-    currentDirection = ROVER_DIRECTION_LEFT;
+    if (!INVERTED_X_AXIS){
+        Motor1SetDirection(MOTOR_1_FORWARDS);
+        Motor2SetDirection(MOTOR_2_BACKWARDS);
+        currentDirection = ROVER_DIRECTION_LEFT;
+    }else{
+        Motor1SetDirection(MOTOR_1_BACKWARDS);
+        Motor2SetDirection(MOTOR_2_FORWARDS);
+        currentDirection = ROVER_DIRECTION_RIGHT;
+    }
 }
 void SetDirectionForwards(){
     Motor1SetDirection(MOTOR_1_FORWARDS);

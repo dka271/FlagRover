@@ -756,19 +756,19 @@ void sendPathToNavigationThread(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NO
     }
     Nop();
     unsigned char i;
-    testingSendEdgeOverWifly(numNodesInPath, numNodesInPath);
+//    testingSendEdgeOverWifly(numNodesInPath, numNodesInPath);
 //    for (i=(numNodesInPath-1); i > 1; i--) {
     for (i=(numNodesInPath-1); i >= 2; i--) {
         Nop();
         sendEdgeToNavigationThread(numNodesInPath-i-1, halfHeartedAdjacencyList.nodes[path[i]].x, halfHeartedAdjacencyList.nodes[path[i]].y, halfHeartedAdjacencyList.nodes[path[i-1]].x, halfHeartedAdjacencyList.nodes[path[i-1]].y);
 //        sendEdgeToNavigationThread(numNodesInPath-i-1, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);
-        testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[i]].x, halfHeartedAdjacencyList.nodes[path[i]].y);
-        testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[i-1]].x, halfHeartedAdjacencyList.nodes[path[i-1]].y);
+//        testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[i]].x, halfHeartedAdjacencyList.nodes[path[i]].y);
+//        testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[i-1]].x, halfHeartedAdjacencyList.nodes[path[i-1]].y);
     }
     sendEdgeToNavigationThread(END_OF_PATH_NUM, halfHeartedAdjacencyList.nodes[path[1]].x, halfHeartedAdjacencyList.nodes[path[1]].y, halfHeartedAdjacencyList.nodes[path[0]].x, halfHeartedAdjacencyList.nodes[path[0]].y);
 //    sendEdgeToNavigationThread(END_OF_PATH_NUM, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i]].y, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].x, halfHeartedAdjacencyList.nodes[path[numNodesInPath-i-1]].y);
-    testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[1]].x, halfHeartedAdjacencyList.nodes[path[1]].y);
-    testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[0]].x, halfHeartedAdjacencyList.nodes[path[0]].y);
+//    testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[1]].x, halfHeartedAdjacencyList.nodes[path[1]].y);
+//    testingSendEdgeOverWifly(halfHeartedAdjacencyList.nodes[path[0]].x, halfHeartedAdjacencyList.nodes[path[0]].y);
 }
 
 

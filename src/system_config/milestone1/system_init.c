@@ -211,6 +211,10 @@ void SYS_Initialize ( void* data )
     SYS_INT_VectorPrioritySet(INT_VECTOR_I2C2, INT_PRIORITY_LEVEL1);
     SYS_INT_VectorSubprioritySet(INT_VECTOR_I2C2, INT_SUBPRIORITY_LEVEL0);
 
+
+    /* Initialize ADC */
+    DRV_ADC_Initialize();
+
     /*Initialize TMR0 */
     DRV_TMR0_Initialize();
     /*Initialize TMR1 */

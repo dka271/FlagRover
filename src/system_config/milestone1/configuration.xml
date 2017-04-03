@@ -309,7 +309,7 @@
       <Template>
         <Name>system_definitions.h</Name>
         <Path>Header Files/app/system_config/milestone1</Path>
-        <Checksum>5B2413380DA43AB47C05B6B1BCA5B333</Checksum>
+        <Checksum>430BA2C23BF69B57C141F7E480DFAEF3</Checksum>
       </Template>
       <Template>
         <Name>system_exceptions.c</Name>
@@ -353,7 +353,7 @@
       <Template>
         <Name>system_init.c</Name>
         <Path>Source Files/app/system_config/milestone1</Path>
-        <Checksum>EBFF8FEAE6BAC00D983E2AEB60E6BD5A</Checksum>
+        <Checksum>955307AEC31C3EC83C7D96491449D33B</Checksum>
       </Template>
       <Template>
         <Name>flagcapture.h</Name>
@@ -369,15 +369,20 @@
         <Path>Source Files/app</Path>
       </Template>
       <Template>
+        <Name>drv_adc_static.c</Name>
+        <Path>Source Files/app/system_config/milestone1/framework/driver/adc/src</Path>
+        <Checksum>37BD8AA63188DC3D271F142615977D20</Checksum>
+      </Template>
+      <Template>
         <Name>system_interrupt.c</Name>
         <Path>Source Files/app/system_config/milestone1</Path>
-        <Checksum>06DCD141AB8DC29889C3853A6FF9F5FB</Checksum>
+        <Checksum>D1BF14B8D8F6E75BE5350ED36BB9F038</Checksum>
         <ProjectFileChecksum>FB0B5FC54763A66DEA6980B6DF310FC0</ProjectFileChecksum>
       </Template>
       <Template>
         <Name>system_interrupt_a.S</Name>
         <Path>Source Files/app/system_config/milestone1</Path>
-        <Checksum>BA4EFAAE766D4F8F7DFEFDDADA2B6BAF</Checksum>
+        <Checksum>1CF069B82CEF362371D9022EE2D04AA0</Checksum>
       </Template>
       <Template>
         <Name>sys_ports_static.c</Name>
@@ -411,6 +416,11 @@
         <Path>Source Files/app/system_config/milestone1/framework/driver/tmr/src</Path>
         <Checksum>DA98AC517C4253466410091E4694C667</Checksum>
       </Template>
+      <Template>
+        <Name>drv_adc_static.h</Name>
+        <Path>Header Files/app/system_config/milestone1/framework/driver/adc</Path>
+        <Checksum>6DB79891CF9D81511FDCC1F92DDF6090</Checksum>
+      </Template>
     </Templates>
     <CompilerItems>
       <C32-AS>
@@ -419,11 +429,11 @@
         <Include value="../src/system_config/milestone1"/>
       </C32-AS>
       <C32>
-        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src"/>
-        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src/system_config/milestone1"/>
-        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src/milestone1"/>
-        <Include value="C:/microchip/harmony/v1_09/framework"/>
-        <Include value="C:/Users/Zea mays/Desktop/EmbeddedRepo/FlagRoverRepo/firmware/src/system_config/milestone1/framework"/>
+        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src"/>
+        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src\system_config\milestone1"/>
+        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src\milestone1"/>
+        <Include value="C:\microchip\harmony\v1_09\framework"/>
+        <Include value="C:\Users\Zea mays\Desktop\EmbeddedRepo\FlagRoverRepo\firmware\src\system_config\milestone1\framework"/>
         <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
         <Include value="../../../../../../../microchip/harmony/v1_09/third_party/rtos/FreeRTOS/Source/include"/>
         <Include value="../src/system_config/milestone1"/>

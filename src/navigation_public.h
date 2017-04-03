@@ -40,7 +40,8 @@ extern "C" {
 #define NAV_TIMER_COUNTER_5_ID 1
 #define NAV_COLOR_SENSOR_1_ID 2
 #define NAV_COLOR_SENSOR_2_ID 3
-#define NAV_COLOR_SENSOR_3_ID 4
+#define NAV_COLOR_SENSOR_3_ID 4//not used in the Flag Rover
+#define NAV_PIXY_CAM_ID 4
 #define NAV_PATHFINDING_ID 5
 #define NAV_PWM_TIMER_ID 6
 #define NAV_OTHER_ID 7
@@ -50,6 +51,8 @@ extern "C" {
 #define NAV_SOURCE_ID_IDX 5
 #define NAV_SOURCE_ID_MASK 0xe0
 #define NAV_SOURCE_ID_OFFSET 5
+    
+unsigned char locationState;
     
 unsigned char navCalculateChecksum(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
 

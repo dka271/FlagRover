@@ -72,6 +72,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define ADC_NUM_SAMPLE_PER_AVERAGE 16
 #define PIXY_CENTER_VALUE 512
 #define PIXY_THRESHOLD_VALUE 20
+#define DELAY_ADC 25
 
 // *****************************************************************************
 // *****************************************************************************
@@ -82,8 +83,6 @@ int incr = 0;
 bool flagDetected = false;
 
 void IntHandlerDrvAdc(void) {
-    /* Clear ADC Interrupt Flag */
-
     ADC_SAMPLE pixy = 0;
     uint8_t i = 0;
 
@@ -92,29 +91,20 @@ void IntHandlerDrvAdc(void) {
     }  
 
     pixy = pixy / 16;
-    
-
-    unsigned char sendPixy[NAV_QUEUE_BUFFER_SIZE];
-    
-    
-    sendPixy[0] = (pixy & 0xFF00) >> 8;
-    sendPixy[1] = (pixy & 0x00FF);
-
-    //USE NAV MESSAGE FORMAT
-//    sendPixy[MAP_SOURCE_ID_IDX] = (MAP_PIXY_CAM_ID & (MAP_SOURCE_ID_MASK >> MAP_SOURCE_ID_OFFSET)) << MAP_SOURCE_ID_OFFSET;
-    
-    
-    if (incr == 25) {
         
-        //SEND TO NAV OR WHEREVER THA FUCK
-        //THERE IS NO MAPPING
-//            mapSendMsgFromISR(sendPixy);
-        unsigned char msg[NAV_QUEUE_BUFFER_SIZE];
-        msg[0] = sendPixy[0];
-        msg[1] = sendPixy[1];
-        msg[NAV_SOURCE_ID_IDX] = NAV_PIXY_CAM_ID << NAV_SOURCE_ID_OFFSET;
-        msg[NAV_CHECKSUM_IDX] = navCalculateChecksum(msg);
-        navSendMsgFromISR(msg);
+    if (incr == DELAY_ADC) {
+        if(abs(pixy - PIXY_CENTER_VALUE) <= PIXY_THRESHOLD_VALUE){
+            unsigned char msg[NAV_QUEUE_BUFFER_SIZE];
+            Nop();
+            msg[0] = (pixy & 0x00FF);
+            msg[1] = (pixy & 0xFF00) >> 8;
+            msg[NAV_SOURCE_ID_IDX] = NAV_PIXY_CAM_ID << NAV_SOURCE_ID_OFFSET;
+            msg[NAV_CHECKSUM_IDX] = navCalculateChecksum(msg);
+            navSendMsgFromISR(msg);
+            flagDetected = true;
+            PLIB_INT_SourceDisable(INT_ID_0, INT_SOURCE_ADC_1);
+            }
+        
     } else {
         incr++;
     }
@@ -123,7 +113,9 @@ void IntHandlerDrvAdc(void) {
 
 
     PLIB_INT_SourceFlagClear(INT_ID_0, INT_SOURCE_ADC_1);
-    PLIB_ADC_SampleAutoStartEnable(ADC_ID_1);
+    if(!flagDetected){
+        PLIB_ADC_SampleAutoStartEnable(ADC_ID_1);
+    }
 }
 
 void IntHandlerDrvTmrInstance0(void) {

@@ -99,13 +99,25 @@ void sendEdgeToNavigationThread(unsigned char seqNum, unsigned char startX, unsi
     xQueueSendToBack(navQueue, msg, portMAX_DELAY);
 }
 
-void sendLocToNavigationThread(unsigned char x, unsigned char y) {
+void sendLocToNavigationThread(unsigned char x, unsigned char y, unsigned char orientation) {
     BaseType_t xHigherPriorityTaskWoken =  pdTRUE;//pdFALSE;
     char msg[7];
     unsigned char seqNum = 130;
     msg[0] = seqNum;
     msg[1] = x;
     msg[2] = y;
+    msg[3] = orientation;
+    msg[5] = NAV_PATHFINDING_ID << NAV_SOURCE_ID_OFFSET;
+    msg[6] = navCalculateChecksum(msg);
+    
+    xQueueSendToBack(navQueue, msg, portMAX_DELAY);
+}
+
+void sendStartMessageToNavigationThread() {
+    BaseType_t xHigherPriorityTaskWoken =  pdTRUE;//pdFALSE;
+    char msg[7];
+    unsigned char seqNum = 135;
+    msg[0] = seqNum;
     msg[5] = NAV_PATHFINDING_ID << NAV_SOURCE_ID_OFFSET;
     msg[6] = navCalculateChecksum(msg);
     
@@ -150,8 +162,8 @@ bool DoWeCrossLineQuestionMark(){
         case (CROSSED_2_LINES):{
             region farFlag = regionList[FAR_FLAG_ZONE];
             unsigned char farFlagY = (farFlag.y - (farFlag.length >> 1)) << 1;
-            unsigned char minX = ((farFlag.x - (farFlag.width >> 1)) << 1) - 5;
-            unsigned char maxX = ((farFlag.x + (farFlag.width >> 1)) << 1) + 5;
+            unsigned char minX = ((farFlag.x - (farFlag.width >> 1)) << 1) - 10;
+            unsigned char maxX = ((farFlag.x + (farFlag.width >> 1)) << 1) + 10;
             unsigned char ourY = ((unsigned char) GetLocationY());
             unsigned char ourX = ((unsigned char) GetLocationX());
             
@@ -163,8 +175,8 @@ bool DoWeCrossLineQuestionMark(){
                     //END TESTING SECTION
                     
             if (ourY >= farFlagY - 20 && (ourX <= maxX && ourX >= minX)){
-                ElectromagnetSetOn();
-                LedSetOn();
+//                ElectromagnetSetOn();
+//                LedSetOn();
                 locationState = CROSSED_3_LINES;
                 return true;
             }else{
@@ -230,6 +242,7 @@ void NAVIGATION_Tasks ( void )
     //Flag Capture stuff
     bool pixyCamFoundFlag = false;
     bool pickedUpFlag = false;
+    bool sawFlagOnce = false;
     //Path stuff
     unsigned int moveAmount[100];
     unsigned char moveType[100];
@@ -239,6 +252,12 @@ void NAVIGATION_Tasks ( void )
     unsigned int moveGoalIdx = 0xff;
     unsigned int moveMaxIdx = 99;
     int roverStopped = 0;
+    bool pathfindingIsReady = false;
+    int pathfindingCount = 0;
+    int pathfindingCountMax = 60;
+    unsigned char flagX = 0xff;
+    unsigned char flagY = 0xff;
+    bool hasFlagLocation = false;
     //I2C Initialization Stuff
     //Open the I2C
     int i2cCount = -100;//Set this low so the color sensors are guaranteed to receive power by the time we start initializing them
@@ -266,6 +285,8 @@ void NAVIGATION_Tasks ( void )
     DRV_HANDLE i2c2_handle = DRV_I2C_Open(DRV_I2C_INDEX_1, DRV_IO_INTENT_READWRITE);
     //Init the state machine
     DRV_TCS_HandleColorSensor(NULL, COLOR_SENSOR_RESET_STATE_MACHINE);
+    DRV_ADC_Open();
+    PLIB_INT_SourceDisable(INT_ID_0, INT_SOURCE_ADC_1);
 
     dbgOutputLoc(DBG_LOC_NAV_BEFORE_WHILE);
     while(1){
@@ -304,6 +325,10 @@ void NAVIGATION_Tasks ( void )
                     if (moveType[moveCurrentIdx] == ROVER_DIRECTION_LEFT){
                         SetDirectionCounterclockwise();
                         ticksRemaining = moveAmount[moveCurrentIdx];
+                        if (ticksRemaining < 0){
+                            ticksRemaining *= -1;
+                            SetDirectionClockwise();
+                        }
                         int minRotation = deg2tickF(30);
                         if (ticksRemaining >= minRotation){
                             //Normal turning speed
@@ -311,15 +336,16 @@ void NAVIGATION_Tasks ( void )
                         }else{
                             //Slow turning speed
                             desiredSpeed = ROVER_SPEED_SLOW_TURNING;
-                        }
-                        if (ticksRemaining < 0){
-                            ticksRemaining *= -1;
-                            SetDirectionClockwise();
+                            ticksRemaining += 30;
                         }
                         sprintf(testMsg, "*Command: Left Turn, Ticks = %d~", ticksRemaining);
                     }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_RIGHT){
                         SetDirectionClockwise();
                         ticksRemaining = moveAmount[moveCurrentIdx];
+                        if (ticksRemaining < 0){
+                            ticksRemaining *= -1;
+                            SetDirectionCounterclockwise();
+                        }
                         int minRotation = deg2tickF(30);
                         if (ticksRemaining >= minRotation){
                             //Normal turning speed
@@ -327,10 +353,7 @@ void NAVIGATION_Tasks ( void )
                         }else{
                             //Slow turning speed
                             desiredSpeed = ROVER_SPEED_SLOW_TURNING;
-                        }
-                        if (ticksRemaining < 0){
-                            ticksRemaining *= -1;
-                            SetDirectionCounterclockwise();
+                            ticksRemaining += 30;
                         }
                         sprintf(testMsg, "*Command: Right Turn, Ticks = %d~", ticksRemaining);
                     }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_FORWARDS){
@@ -400,6 +423,11 @@ void NAVIGATION_Tasks ( void )
                         unsigned char intY = (0xff & (int) (GetLocationY())) >> 1;
                         pathMsg[0] = intX;
                         pathMsg[1] = intY;
+                        int tempOrientation = GetOrientation();
+                        if (tempOrientation < 0){
+                            tempOrientation += 360;
+                        }
+                        pathMsg[2] = ((unsigned char) (tempOrientation >> 1));
                         pathMsg[PATH_SOURCE_ID_IDX] = PATH_NAVIGATION_ID << PATH_SOURCE_ID_OFFSET;
                         pathMsg[PATH_CHECKSUM_IDX] = pathCalculateChecksum(pathMsg);
                         pathSendMsg(pathMsg);
@@ -451,10 +479,29 @@ void NAVIGATION_Tasks ( void )
                     encoderSpeedTest(speed1);
                 }
                 
+                //Call pathfinding every x seconds
+                pathfindingCount++;
+                if (pathfindingCount >= pathfindingCountMax && pathfindingIsReady && locationState != CROSSED_3_LINES){
+                    unsigned char commMsg[COMM_QUEUE_BUFFER_SIZE];
+                    sprintf(commMsg,"*{\"S\":\"w\",\"T\":\"f\",\"M\":\"g\",\"C\":1}~");
+                    commMsg[COMM_SOURCE_ID_IDX] = COMM_UART_ID << COMM_SOURCE_ID_OFFSET;
+                    commMsg[COMM_CHECKSUM_IDX] = commCalculateChecksum(commMsg);
+                    commSendMsg(commMsg);
+                    pathfindingCount = 0;
+                }
+                
                 //Ignore tape for 4 seconds
                 ignoreTapeCount++;
                 if (ignoreTapeCount >= ignoreTapeMax){
                     ignoringTape = 0;
+                    if (locationState == CROSSED_3_LINES){
+                        ElectromagnetSetOn();
+                        LedSetOn();
+                        if (!sawFlagOnce){
+                            PLIB_INT_SourceEnable(INT_ID_0, INT_SOURCE_ADC_1);
+                            sawFlagOnce = true;
+                        }
+                    }
                 }
             }else if (msgId == NAV_COLOR_SENSOR_1_ID){
                 //Handle stuff from color sensor 1 (front left)
@@ -471,32 +518,56 @@ void NAVIGATION_Tasks ( void )
                     moveGoalIdx = 0xff;
                     ticksRemaining = 0;
                     desiredSpeed = ROVER_SPEED_STOPPED;
+                    pathfindingCount = 0;
                     if (DoWeCrossLineQuestionMark()){
                         //Cross the line
                         if (locationState == CROSSED_3_LINES){
-                            moveAmount[moveLastIdx] = cm2tick(8);
+                            //Orient towards flag
+                            if (hasFlagLocation){
+                                int angleTicks = CalculateAngleFromPoints((unsigned char) GetLocationX(), (unsigned char) GetLocationY(), flagX, flagY);
+                                angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                                if (angleTicks < 0){
+                                    //Right turn
+                                    angleTicks *= -1;
+                                    moveAmount[moveLastIdx] = angleTicks;
+                                    moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+                                    moveLastIdx++;
+                                }else{
+                                    //Left turn
+                                    moveAmount[moveLastIdx] = angleTicks;
+                                    moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                                    moveLastIdx++;
+                                }
+                            }
+                            moveAmount[moveLastIdx] = cm2tick(10);
+                            ignoreTapeCount = -30;
                         }else if (locationState == CROSSED_2_LINES){
                             moveAmount[moveLastIdx] = cm2tick(8);
+                            ignoreTapeCount = -30;
                         }else if (locationState == CROSSED_1_LINES){
                             //Orient ourselves towards the line
-                            int angleTicks = deg2tick(90);
-                            angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
-                            moveAmount[moveLastIdx] = angleTicks;
                             if (INVERTED_X_AXIS){
-                                moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
-                            }else{
                                 moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                                int angleTicks = deg2tickF(94.6);
+                                angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                                moveAmount[moveLastIdx] = angleTicks;
+                            }else{
+                                moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+                                int angleTicks = deg2tickF(97.5);
+                                angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                                moveAmount[moveLastIdx] = angleTicks;
                             }
                             moveLastIdx++;
-                            moveAmount[moveLastIdx] = cm2tick(30);
+                            moveAmount[moveLastIdx] = cm2tick(10);
+                            ignoreTapeCount = -40;
                         }else{
                             moveAmount[moveLastIdx] = cm2tick(20);
+                            ignoreTapeCount = 0;
                         }
                         moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                         moveLastIdx++;
                         moveGoalIdx = moveLastIdx;
                         ignoringTape = 1;
-                        ignoreTapeCount = 20;
                     }else if (locationState == CROSSED_3_LINES && !ignoringTape){
                         //Handle movement while in the flag zone
                         if (cs1OnTape){
@@ -513,7 +584,7 @@ void NAVIGATION_Tasks ( void )
                                 moveAmount[moveLastIdx] = cm2tick(1);
                                 moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                                 moveLastIdx++;
-                                moveAmount[moveLastIdx] = cm2tick(5);
+                                moveAmount[moveLastIdx] = cm2tick(8);
                                 moveType[moveLastIdx] = ROVER_DIRECTION_BACKWARDS;
                                 moveLastIdx++;
                                 moveGoalIdx = moveLastIdx;
@@ -522,11 +593,17 @@ void NAVIGATION_Tasks ( void )
                             }else{
                                 //This one on tape
                                 if (INVERTED_X_AXIS){
+//                                    moveAmount[moveLastIdx] = cm2tick(1);
+//                                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
+//                                    moveLastIdx++;
                                     moveAmount[moveLastIdx] = deg2tick(90);
                                     moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
                                     moveLastIdx++;
                                     moveGoalIdx = moveLastIdx;
                                 }else{
+//                                    moveAmount[moveLastIdx] = cm2tick(1);
+//                                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
+//                                    moveLastIdx++;
                                     moveAmount[moveLastIdx] = deg2tick(90);
                                     moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
                                     moveLastIdx++;
@@ -551,50 +628,6 @@ void NAVIGATION_Tasks ( void )
                         ignoreTapeCount = 20;
                     }
                 }
-                
-//                if (!ignoringTape){
-//                    if (cs1OnTape && cs2OnTape){
-//                        //Both things are on tape
-//                        moveCurrentIdx = 0;
-//                        moveLastIdx = 0;
-//                        moveGoalIdx = 0xff;
-//                        ticksRemaining = 0;
-//                        desiredSpeed = ROVER_SPEED_STOPPED;
-//                        if (DoWeCrossLineQuestionMark()){
-//                            //Cross the line
-//                            moveAmount[moveLastIdx] = cm2tick(25);
-//                            moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
-//                            moveLastIdx++;
-//                            moveGoalIdx = moveLastIdx;
-//                            ignoringTape = 1;
-//                            ignoreTapeCount = 0;
-//                        }else{
-//                            //Back up
-//                            moveAmount[moveLastIdx] = cm2tick(1);
-//                            moveType[moveLastIdx] = ROVER_DIRECTION_BACKWARDS;
-//                            moveLastIdx++;
-//                            moveGoalIdx = moveLastIdx;
-//                            ignoringTape = 1;
-//                            ignoreTapeCount = 0;
-//                        }
-//                    }else if (cs1OnTape && !cs2OnTape){//(!ignoringTape && receivemsg[0] == COLOR_IS_BLUE){
-//                        //Stop the rover from moving, and kill the current path
-//                        moveCurrentIdx = 0;
-//                        moveLastIdx = 0;
-//                        moveGoalIdx = 0xff;
-//                        ticksRemaining = 0;
-//                        desiredSpeed = ROVER_SPEED_STOPPED;
-//                        //Try to get the other sensor on the tape
-//                        moveAmount[moveLastIdx] = cm2tick(1);
-//                        moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
-//                        moveLastIdx++;
-//                        moveAmount[moveLastIdx] = deg2tick(180);
-//                        moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
-//                        moveLastIdx++;
-//                        moveGoalIdx = moveLastIdx;
-//                        SetDirectionBackwards();
-//                    }
-//                }
                 //FOR TESTING
                 if (COLOR_SENSOR_SERVER_TESTING){
                     unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
@@ -617,32 +650,55 @@ void NAVIGATION_Tasks ( void )
                     moveGoalIdx = 0xff;
                     ticksRemaining = 0;
                     desiredSpeed = ROVER_SPEED_STOPPED;
+                    pathfindingCount = 0;
                     if (DoWeCrossLineQuestionMark()){
                         //Cross the line
                         if (locationState == CROSSED_3_LINES){
-                            moveAmount[moveLastIdx] = cm2tick(8);
+                            if (hasFlagLocation){
+                                int angleTicks = CalculateAngleFromPoints((unsigned char) GetLocationX(), (unsigned char) GetLocationY(), flagX, flagY);
+                                angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                                if (angleTicks < 0){
+                                    //Right turn
+                                    angleTicks *= -1;
+                                    moveAmount[moveLastIdx] = angleTicks;
+                                    moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+                                    moveLastIdx++;
+                                }else{
+                                    //Left turn
+                                    moveAmount[moveLastIdx] = angleTicks;
+                                    moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                                    moveLastIdx++;
+                                }
+                            }
+                            moveAmount[moveLastIdx] = cm2tick(10);
+                            ignoreTapeCount = -30;
                         }else if (locationState == CROSSED_2_LINES){
                             moveAmount[moveLastIdx] = cm2tick(8);
+                            ignoreTapeCount = -30;
                         }else if (locationState == CROSSED_1_LINES){
                             //Orient ourselves towards the line
-                            int angleTicks = deg2tick(90);
-                            angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
-                            moveAmount[moveLastIdx] = angleTicks;
                             if (INVERTED_X_AXIS){
                                 moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
+                                int angleTicks = deg2tickF(82.5);
+                                angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                                moveAmount[moveLastIdx] = angleTicks;
                             }else{
                                 moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
+                                int angleTicks = deg2tickF(85.4);
+                                angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+                                moveAmount[moveLastIdx] = angleTicks;
                             }
                             moveLastIdx++;
-                            moveAmount[moveLastIdx] = cm2tick(30);
+                            moveAmount[moveLastIdx] = cm2tick(10);
+                            ignoreTapeCount = -40;
                         }else{
                             moveAmount[moveLastIdx] = cm2tick(20);
+                            ignoreTapeCount = 0;
                         }
                         moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                         moveLastIdx++;
                         moveGoalIdx = moveLastIdx;
                         ignoringTape = 1;
-                        ignoreTapeCount = 20;
                     }else if (locationState == CROSSED_3_LINES && !ignoringTape){
                         //Handle movement while in the flag zone
                         if (cs2OnTape){
@@ -659,7 +715,7 @@ void NAVIGATION_Tasks ( void )
                                 moveAmount[moveLastIdx] = cm2tick(1);
                                 moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                                 moveLastIdx++;
-                                moveAmount[moveLastIdx] = cm2tick(5);
+                                moveAmount[moveLastIdx] = cm2tick(8);
                                 moveType[moveLastIdx] = ROVER_DIRECTION_BACKWARDS;
                                 moveLastIdx++;
                                 moveGoalIdx = moveLastIdx;
@@ -668,11 +724,17 @@ void NAVIGATION_Tasks ( void )
                             }else{
                                 //This one on tape
                                 if (INVERTED_X_AXIS){
+//                                    moveAmount[moveLastIdx] = cm2tick(1);
+//                                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
+//                                    moveLastIdx++;
                                     moveAmount[moveLastIdx] = deg2tick(90);
                                     moveType[moveLastIdx] = ROVER_DIRECTION_LEFT;
                                     moveLastIdx++;
                                     moveGoalIdx = moveLastIdx;
                                 }else{
+//                                    moveAmount[moveLastIdx] = cm2tick(1);
+//                                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
+//                                    moveLastIdx++;
                                     moveAmount[moveLastIdx] = deg2tick(90);
                                     moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
                                     moveLastIdx++;
@@ -697,50 +759,6 @@ void NAVIGATION_Tasks ( void )
                         ignoreTapeCount = 20;
                     }
                 }
-                
-//                if (!ignoringTape){
-//                    if (cs1OnTape && cs2OnTape){
-//                        //Both things are on tape
-//                        moveCurrentIdx = 0;
-//                        moveLastIdx = 0;
-//                        moveGoalIdx = 0xff;
-//                        ticksRemaining = 0;
-//                        desiredSpeed = ROVER_SPEED_STOPPED;
-//                        if (DoWeCrossLineQuestionMark()){
-//                            //Cross the line
-//                            moveAmount[moveLastIdx] = cm2tick(25);
-//                            moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
-//                            moveLastIdx++;
-//                            moveGoalIdx = moveLastIdx;
-//                            ignoringTape = 1;
-//                            ignoreTapeCount = 0;
-//                        }else{
-//                            //Back up
-//                            moveAmount[moveLastIdx] = cm2tick(1);
-//                            moveType[moveLastIdx] = ROVER_DIRECTION_BACKWARDS;
-//                            moveLastIdx++;
-//                            moveGoalIdx = moveLastIdx;
-//                            ignoringTape = 1;
-//                            ignoreTapeCount = 0;
-//                        }
-//                    }else if (!cs1OnTape && cs2OnTape){//(!ignoringTape && receivemsg[0] == COLOR_IS_BLUE){
-//                        //Stop the rover from moving, and kill the current path
-//                        moveCurrentIdx = 0;
-//                        moveLastIdx = 0;
-//                        moveGoalIdx = 0xff;
-//                        ticksRemaining = 0;
-//                        desiredSpeed = ROVER_SPEED_STOPPED;
-//                        //Try to get the other sensor on the tape
-//                        moveAmount[moveLastIdx] = cm2tick(1);
-//                        moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
-//                        moveLastIdx++;
-//                        moveAmount[moveLastIdx] = deg2tick(180);
-//                        moveType[moveLastIdx] = ROVER_DIRECTION_RIGHT;
-//                        moveLastIdx++;
-//                        moveGoalIdx = moveLastIdx;
-//                        SetDirectionBackwards();
-//                    }
-//                }
                 //FOR TESTING
                 if (COLOR_SENSOR_SERVER_TESTING){
                     unsigned char testServerMsg[SEND_QUEUE_BUFFER_SIZE];
@@ -750,9 +768,23 @@ void NAVIGATION_Tasks ( void )
                 //END FOR TESTING
             }else if (msgId == NAV_PIXY_CAM_ID){
                 //Handle messages with pixy cam information
-                    Nop();
+                Nop();
+                unsigned char wifiMsg[SEND_QUEUE_BUFFER_SIZE];
+                sprintf(wifiMsg, "*{Pixy Cam Value = %d}~",receivemsg[0] + (receivemsg[1] << 8));
+                commSendMsgToWifiQueue(wifiMsg);
+                Nop();
                 if (locationState == CROSSED_3_LINES){
                     //Only do this in the flag zone
+                    //Charge le flag
+                    moveCurrentIdx = 0;
+                    moveLastIdx = 0;
+                    moveGoalIdx = 0xff;
+                    ticksRemaining = 0;
+                    desiredSpeed = ROVER_SPEED_STOPPED;
+                    moveAmount[moveLastIdx] = cm2tick(20);
+                    moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
+                    moveLastIdx++;
+                    moveGoalIdx = moveLastIdx;
                 }
             }else if (msgId == NAV_PATHFINDING_ID){
                 //Handle stuff from the pathfinding queue
@@ -785,6 +817,13 @@ void NAVIGATION_Tasks ( void )
                         //Update the position
                         SetLocationX(startX);
                         SetLocationY(startY);
+                        //Update the orientation
+                        SetOrientation(endX);
+                        Nop();
+                        addCommand = false;
+                    }else if (seqNum == 135){
+                        //Start pathfinding call loop
+                        pathfindingIsReady = true;
                         addCommand = false;
                     }else if (seqNum > 0 && moveLastIdx == 0){
                         //The start of this path was dropped, drop the rest of the path
@@ -860,6 +899,9 @@ void NAVIGATION_Tasks ( void )
                         if (seqNum == END_OF_PATH_NUM){
                             //This is the goal
                             moveGoalIdx = moveLastIdx;
+                            hasFlagLocation = true;
+                            flagX = endX;
+                            flagY = endY;
                         }
                     }
                 }

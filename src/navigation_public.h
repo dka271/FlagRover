@@ -53,6 +53,7 @@ extern "C" {
 #define NAV_SOURCE_ID_OFFSET 5
     
 unsigned char locationState;
+void sendStartMessageToNavigationThread();
     
 unsigned char navCalculateChecksum(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
 
@@ -60,7 +61,7 @@ void navSendMsgFromISR(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
 void navSendMsg(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
 
 void sendEdgeToNavigationThread(unsigned char seqNum, unsigned char startX, unsigned char startY, unsigned char endX, unsigned char endY);
-void sendLocToNavigationThread(unsigned char x, unsigned char y);
+void sendLocToNavigationThread(unsigned char x, unsigned char y, unsigned char orientation);
 
 
     /* Provide C++ Compatibility */

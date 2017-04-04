@@ -66,7 +66,7 @@ extern "C" {
 #define MOTOR_ANGLE_ID 0xe7//231
     
 //Constants used in testing code
-#define TEST_SPEED_SERVER_ID ((unsigned char) 'v')
+#define TEST_SPEED_SERVER_ID ((unsigned char) 'q')
 #define TEST_ANGLE_DISTANCE_SERVER_ID ((unsigned char) 'x')
 #define TEST_COMM_ID_IDX 2
 #define TEST_COMM_SPEED_IDX 0

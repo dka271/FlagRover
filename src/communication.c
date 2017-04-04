@@ -411,6 +411,13 @@ void COMMUNICATION_Tasks(void) {
                                 pathSendMsg(msgDefNotGlobal);
                             }
                         }
+                    } else if (Source == 'v') {
+                        if (jsonGetMessageType(receivemsg, MessageType)) {
+                        //error
+                        dbgOutputLoc(DBG_LOC_BAD_ERROR - 3);
+                        } else if (MessageType[0] == 'z') {
+                            sendStartMessageToNavigationThread();
+                        }
                     }
 
                     if (jsonGetDestination(receivemsg, &Dest)) {

@@ -261,6 +261,27 @@ void testingSendPathOverWifly(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODE
     }
 }
 
+void sendTapeSignalToSensor() {
+    unsigned char testString[208];
+    unsigned char source;
+    if (IDENTITY_OF_THIS_ROVER == 1) {
+        source = 'f';
+    } else if (IDENTITY_OF_THIS_ROVER == 3) {
+        source = 't';
+    } else {
+        source = 'c';
+    }
+    
+    unsigned char dest = 's';
+    unsigned char messageType = 't';
+    sprintf(testString, "*{\"S\":\"%c\",\"T\":\"%c\",\"M\":\"%c\"}~", source, dest, messageType);
+    unsigned char i;
+    for (i = 0; i < strlen(testString); i++) {
+        xQueueSendToBack(sendQueue, &testString[i], portMAX_DELAY);
+        PLIB_INT_SourceEnable(INT_ID_0, INT_SOURCE_USART_1_TRANSMIT);
+    }
+}
+
 unsigned char msgDefNotGlobal[PATH_QUEUE_BUFFER_SIZE];
 
 /******************************************************************************

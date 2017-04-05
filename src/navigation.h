@@ -91,8 +91,11 @@ extern "C" {
 #define CROSSED_2_LINES 2
 #define CROSSED_3_LINES 3
     
+#define NAV_TESTING 1
+    
     
 bool DoWeCrossLineQuestionMark();
+void HandleColorSensorData(unsigned char ColorSensorID);
 
 // *****************************************************************************
 /* Application states

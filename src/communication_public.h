@@ -53,7 +53,7 @@ extern "C" {
 #define MAXIMUM_NUMBER_OF_OBSTACLES 30
 #define MAXIMUM_NUMBER_OF_NODES 120
 #define MAXIMUM_NUMBER_OF_IN_SIGHT_NODES 80
-#define NODE_OFFSET 8
+#define NODE_OFFSET 6
     
 typedef struct {
     unsigned char objectType;

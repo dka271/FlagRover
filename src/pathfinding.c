@@ -363,8 +363,8 @@ void calculateOffsetNodes(fieldItem tempFieldItem) {
 //        }
 //
         if (tempFieldItem.centerY >= ((tempFieldItem.length / 2) + offset)) {
-            bottomLeftPoint.x = tempFieldItem.centerX - (tempFieldItem.width / 2) - offset;
-            bottomLeftPoint.y = tempFieldItem.centerY - (tempFieldItem.length / 2) - offset;
+            bottomLeftPoint.x = tempFieldItem.centerX - (tempFieldItem.width / 2) - (offset/2);
+            bottomLeftPoint.y = tempFieldItem.centerY - (tempFieldItem.length / 2) - (offset/2);
             if (checkIfNodeValid(bottomLeftPoint)) {
                 halfHeartedAdjacencyList.nodes[currentNumberOfNodes] = bottomLeftPoint;
                 currentNumberOfNodes++;
@@ -372,8 +372,8 @@ void calculateOffsetNodes(fieldItem tempFieldItem) {
         }
         
         if (tempFieldItem.centerX <= (255 - (tempFieldItem.width / 2) - offset) && tempFieldItem.centerY >= ((tempFieldItem.length / 2) + offset)) {
-            bottomRightPoint.x = tempFieldItem.centerX + (tempFieldItem.width / 2) + offset;
-            bottomRightPoint.y = tempFieldItem.centerY - (tempFieldItem.length / 2) - offset;
+            bottomRightPoint.x = tempFieldItem.centerX + (tempFieldItem.width / 2) + (offset/2);
+            bottomRightPoint.y = tempFieldItem.centerY - (tempFieldItem.length / 2) - (offset/2);
             if (checkIfNodeValid(bottomRightPoint)) {
                 halfHeartedAdjacencyList.nodes[currentNumberOfNodes] = bottomRightPoint;
                 currentNumberOfNodes++;

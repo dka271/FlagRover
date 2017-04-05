@@ -52,6 +52,14 @@ extern "C" {
 #define NAV_SOURCE_ID_MASK 0xe0
 #define NAV_SOURCE_ID_OFFSET 5
     
+//Used to control the types of movements the rover makes
+#define STATE_WAITING_FOR_GAME_START 0
+#define STATE_MOVING_TO_TAPE 1
+#define STATE_ORIENTING_TO_TAPE 2
+#define STATE_WAITING_FOR_SENSOR_FEEDBACK 3
+#define STATE_ORIENTATION_FOUND 4
+unsigned char movementState;
+    
 unsigned char locationState;
 void sendStartMessageToNavigationThread();
     

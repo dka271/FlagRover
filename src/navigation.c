@@ -148,6 +148,7 @@ bool DoWeCrossLineQuestionMark(){
             
             if (ourY >= centerY - 10){
                 locationState = CROSSED_1_LINES;
+                flagRoverEnteredNewZone();
                 return true;
             }else{
                 return false;
@@ -163,7 +164,7 @@ bool DoWeCrossLineQuestionMark(){
                 commSendMsgToWifiQueue(testMsg);
             }
             //END TESTING SECTION
-                    
+            flagRoverEnteredNewZone();  
             return true;
             break;
         }
@@ -186,6 +187,7 @@ bool DoWeCrossLineQuestionMark(){
 //                ElectromagnetSetOn();
 //                LedSetOn();
                 locationState = CROSSED_3_LINES;
+                flagRoverEnteredNewZone();
                 return true;
             }else{
                 return false;

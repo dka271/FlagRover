@@ -80,6 +80,7 @@ void constructFieldItem(fieldItem *object, unsigned char objectType, unsigned ch
 void testingSendEdgeOverWifly(unsigned char i, unsigned char j);
 void testingSendPathOverWifly(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]);
 void sendTapeSignalToSensor();
+void flagRoverEnteredNewZone();
 
     /* Provide C++ Compatibility */
 #ifdef __cplusplus

@@ -71,6 +71,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "electromagnet.h"
 #include "LED.h"
 #include "myi2c.h"
+#include "pathfinding_public.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -85,17 +86,13 @@ extern "C" {
 // Section: Type Definitions
 // *****************************************************************************
 // *****************************************************************************
-
-#define CROSSED_0_LINES 0
-#define CROSSED_1_LINES 1
-#define CROSSED_2_LINES 2
-#define CROSSED_3_LINES 3
     
 #define NAV_TESTING 1
     
     
 bool DoWeCrossLineQuestionMark();
 void HandleColorSensorData(unsigned char ColorSensorID);
+void GoToRandomLine(bool rotate);
 
 // *****************************************************************************
 /* Application states

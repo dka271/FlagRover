@@ -58,8 +58,14 @@ extern "C" {
 #define STATE_ORIENTING_TO_TAPE 2
 #define STATE_WAITING_FOR_SENSOR_FEEDBACK 3
 #define STATE_ORIENTATION_FOUND 4
-unsigned char movementState;
+
+//Define which region the flag rover is in (0: our defense, 1: center, 2: enemy defense, 3: far flag zone)
+#define CROSSED_0_LINES 0
+#define CROSSED_1_LINES 1
+#define CROSSED_2_LINES 2
+#define CROSSED_3_LINES 3
     
+unsigned char movementState;
 unsigned char locationState;
 void sendStartMessageToNavigationThread();
     

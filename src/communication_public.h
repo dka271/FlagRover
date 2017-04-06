@@ -79,7 +79,7 @@ void uartReceiveFromSendQueueInISR(unsigned char msg[SEND_QUEUE_BUFFER_SIZE]);
 void constructFieldItem(fieldItem *object, unsigned char objectType, unsigned char versionNum, unsigned char length, unsigned char width, unsigned char centerX, unsigned char centerY, unsigned char orientation);
 void testingSendEdgeOverWifly(unsigned char i, unsigned char j);
 void testingSendPathOverWifly(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]);
-
+void sendTapeSignalToSensor();
 
     /* Provide C++ Compatibility */
 #ifdef __cplusplus

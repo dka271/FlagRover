@@ -77,6 +77,9 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 extern "C" {
 
 #endif
+    
+    
+void respondToFlagRoverRegionQuery(unsigned char from);
 // DOM-IGNORE-END 
 
 // *****************************************************************************

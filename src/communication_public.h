@@ -29,6 +29,7 @@
  */
 
 /* TODO:  Include other files here if needed. */
+#include <stdbool.h>
 
 /* Provide C++ Compatibility */
 #ifdef __cplusplus
@@ -66,6 +67,8 @@ typedef struct {
 } fieldItem;
 
 unsigned char commCalculateChecksum(unsigned char msg[COMM_QUEUE_BUFFER_SIZE]);
+
+bool gameIsPaused;
     
 void commSendMsgFromISR(unsigned char msg[COMM_QUEUE_BUFFER_SIZE]);
 void commSendMsg(unsigned char msg[COMM_QUEUE_BUFFER_SIZE]);

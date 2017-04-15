@@ -87,12 +87,36 @@ extern "C" {
 // *****************************************************************************
 // *****************************************************************************
     
-#define NAV_TESTING 1
+#define NAV_TESTING 0
     
-    
+//Determines if the flag rover should cross the line being sensed
+//Returns false in other rovers   
 bool DoWeCrossLineQuestionMark();
+
+//Handles decision making when the one of the color sensors moves onto or leaves a line
 void HandleColorSensorData(unsigned char ColorSensorID);
+
+//Adds a path to the queue that will take the rover to a new location in hopes of finding a line
 void GoToRandomLine(bool rotate);
+
+// *****************************************************************************
+//Movement API functions
+
+//Clears any path that is currently in the queue
+void ResetMovementQueue();
+
+//Stops the current movement of the rover
+void StopMovement();
+
+//Adds a movement to the queue
+void AddMovement(int tickAmount, int direction);
+
+//Sets the goal to the movement that was just added
+void SetMovementGoal();
+
+//This function handles reading from the movement queue and starting movements
+//Returns true if it reached the goal
+bool HandleMovementQueue();
 
 // *****************************************************************************
 /* Application states

@@ -355,6 +355,7 @@ void COMMUNICATION_Tasks(void) {
     //            unsigned char receiveFromWifiBuffer[RECEIVE_BUFFER_SIZE];
     //            unsigned int receiveFromWifiBufferIdx = 0;
     int PreviousSequenceNumber = 0;
+    gameIsPaused = false;
 
     dbgOutputLoc(DBG_LOC_COMM_BEFORE_WHILE);
     dbgOutputLoc(DBG_LOC_COMM_BEFORE_WHILE_NEW_VAL);
@@ -494,6 +495,8 @@ void COMMUNICATION_Tasks(void) {
                         dbgOutputLoc(DBG_LOC_BAD_ERROR - 3);
                         } else if (MessageType[0] == 'z') {
                             sendStartMessageToNavigationThread();
+                        } else if (MessageType[0] == 'u') {
+                            gameIsPaused = !gameIsPaused;
                         }
                     }
 

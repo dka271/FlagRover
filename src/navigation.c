@@ -924,8 +924,8 @@ void NAVIGATION_Tasks ( void )
                                         orientationReceived = true;
                                     }
                                 }else{
-                                    SetOrientation(endX);
-                                    orientationReceived = true;
+//                                    SetOrientation(endX);
+//                                    orientationReceived = true;
                                 }
                         
                                 if (orientationReceived){
@@ -946,7 +946,7 @@ void NAVIGATION_Tasks ( void )
                                     GoToRandomLine(true);
                                 }
                             }else{
-                                SetOrientation(endX);
+//                                SetOrientation(endX);
                             }
                         }
                         addCommand = false;

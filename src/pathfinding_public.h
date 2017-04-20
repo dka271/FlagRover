@@ -90,6 +90,8 @@ typedef struct {
 #define FAR_FLAG_ZONE 5
 #define FAR_DEFENSE_ZONE 6
 
+#define PATHFINDING_TESTING 1
+
 //Maximum node locations
 unsigned char MAX_LENGTH_OF_FIELD; //110 start
 unsigned char MAX_WIDTH_OF_FIELD; //64 start

@@ -519,9 +519,9 @@ int orientation(point p, point q, point r) {
 
 //Calls the line intersection function on each part of a crossSquare (p2 = topLeft, q2 = bottomRight)
 bool checkIntersectionOfLineAndCrossSquare(point p1, point q1, point p2, point q2) {
-    if (p2.x == NULL || p2.y == NULL || q2.x == NULL || q2.y == NULL) {
-        return true;
-    }
+//    if (p2.x == NULL || p2.y == NULL || q2.x == NULL || q2.y == NULL) {
+//        return true;
+//    }
     if (checkIntersectionOfTwoLines(p1, q1, p2, q2)) {
         return true;
     }
@@ -844,7 +844,12 @@ unsigned char calculatePath() {
 
     //If statement runs if AStar fails
     if (monotonicAStar(path, start, goal)) {
-//        testingSendPathOverWifly(path);
+        //send notifier of no path found
+        if (PATHFINDING_TESTING){
+            unsigned char testMsg[SEND_QUEUE_BUFFER_SIZE];
+            sprintf(testMsg, "*No Path Found~");
+            commSendMsgToWifiQueue(testMsg);
+        }
         Nop();
         return 1;
     }

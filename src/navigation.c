@@ -958,6 +958,7 @@ void NAVIGATION_Tasks ( void )
                         //Start pathfinding call loop
                         pathfindingIsReady = true;
                         movementState = STATE_MOVING_TO_TAPE;
+                        locationState = CROSSED_0_LINES;
                         //Choose a direction and go until we hit a line
                         //This is the first movement, so we can just go straight
                         GoToRandomLine(false);

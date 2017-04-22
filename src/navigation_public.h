@@ -65,9 +65,13 @@ extern "C" {
 #define CROSSED_2_LINES 2
 #define CROSSED_3_LINES 3
     
+//Define the maximum number of failed path founds before we do a thing
+#define MAX_NO_PATH_FOUND 3
+    
 unsigned char movementState;
 unsigned char locationState;
 void sendStartMessageToNavigationThread();
+void sendNoPathFoundToNavigationThread();
     
 unsigned char navCalculateChecksum(unsigned char msg[NAV_QUEUE_BUFFER_SIZE]);
 

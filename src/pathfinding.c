@@ -845,6 +845,7 @@ unsigned char calculatePath() {
     //If statement runs if AStar fails
     if (monotonicAStar(path, start, goal)) {
         //send notifier of no path found
+        sendNoPathFoundToNavigationThread();
         if (PATHFINDING_TESTING){
             unsigned char testMsg[SEND_QUEUE_BUFFER_SIZE];
             sprintf(testMsg, "*No Path Found~");

@@ -330,6 +330,7 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                 //We are aligned to the tape, wait for sensor feedback
                 movementState = STATE_WAITING_FOR_SENSOR_FEEDBACK;
                 sendTapeSignalToSensor();
+                orientAttempts = 0;
             }else if (orientAttempts >= 4){
                 //This orientation isn't working, back up and try again
                 AddMovement(cm2tick(5), ROVER_DIRECTION_BACKWARDS);
@@ -371,17 +372,19 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                         if (angleTicks < 0){
                             //Right turn
                             angleTicks *= -1;
+                            angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
-                                AddMovement(angleTicks, turn1Direction);
-                            }else{
                                 AddMovement(angleTicks, turn2Direction);
+                            }else{
+                                AddMovement(angleTicks, turn1Direction);
                             }
                         }else{
                             //Left turn
+                            angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
-                                AddMovement(angleTicks, turn2Direction);
-                            }else{
                                 AddMovement(angleTicks, turn1Direction);
+                            }else{
+                                AddMovement(angleTicks, turn2Direction);
                             }
                         }
                     }
@@ -419,19 +422,41 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                         //Both on tape
                         //Drop the flag
                         ElectromagnetSetOff();
-                        AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
+                        AddMovement(cm2tick(2), ROVER_DIRECTION_FORWARDS);
                         AddMovement(cm2tick(8), ROVER_DIRECTION_BACKWARDS);
                         SetMovementGoal();
                         ignoringTape = 1;
-                        ignoreTapeCount = 0;
+                        ignoreTapeCount = -15;
+                        orientAttempts = 0;
                     }else{
                         //This one on tape
-                        if (INVERTED_X_AXIS){
-                            AddMovement(deg2tick(90), turn1Direction);
+                        SetDirectionBackwards();
+                        orientAttempts++;
+                        if (orientAttempts >= 4){
+                            AddMovement(cm2tick(5), ROVER_DIRECTION_BACKWARDS);
+                            AddMovement(deg2tick(10), turn1Direction);
+                            AddMovement(cm2tick(15), ROVER_DIRECTION_FORWARDS);
                             SetMovementGoal();
+                            orientAttempts = 0;
                         }else{
-                            AddMovement(deg2tick(90), turn2Direction);
-                            SetMovementGoal();
+                            //Attempt to orient to the line
+                            if (INVERTED_X_AXIS){
+                                AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
+                                AddMovement(deg2tick(20), turn1Direction);
+                                AddMovement(deg2tick(20), turn1Direction);
+                                AddMovement(deg2tick(20), turn1Direction);
+                                AddMovement(deg2tick(20), turn1Direction);
+                                AddMovement(deg2tick(20), turn1Direction);
+                                SetMovementGoal();
+                            }else{
+                                AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
+                                AddMovement(deg2tick(20), turn2Direction);
+                                AddMovement(deg2tick(20), turn2Direction);
+                                AddMovement(deg2tick(20), turn2Direction);
+                                AddMovement(deg2tick(20), turn2Direction);
+                                AddMovement(deg2tick(20), turn2Direction);
+                                SetMovementGoal();
+                            }
                         }
                     }
                 }
@@ -636,7 +661,7 @@ void NAVIGATION_Tasks ( void )
     SetDirectionForwards();
     //I2C Initialization Stuff
     //Open the I2C
-    int i2cCount = -100;//Set this low so the color sensors are guaranteed to receive power by the time we start initializing them
+    int i2cCount = -500;//Set this low so the color sensors are guaranteed to receive power by the time we start initializing them
     while (DRV_I2C_Status(sysObj.drvI2C0) != SYS_STATUS_READY){
         //Wait for the I2C to be ready to be opened
         //FOR TESTING
@@ -1060,7 +1085,7 @@ void NAVIGATION_Tasks ( void )
                     int currentState2 = DRV_TCS_HandleColorSensor(i2c1_handle, COLOR_SENSOR_ID_2);
                     i2cCount = 0;
                     Nop();
-                }else if (i2cCount == 25){
+                }else if (i2cCount == 30){
                     int currentState1 = DRV_TCS_HandleColorSensor(i2c2_handle, COLOR_SENSOR_ID_1);
                 }
             }else if (msgId == NAV_OTHER_ID){

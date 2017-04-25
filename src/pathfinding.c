@@ -383,8 +383,8 @@ void calculateOffsetNodes(fieldItem tempFieldItem) {
     }else {
     
         if (tempFieldItem.objectType >= 2 && tempFieldItem.objectType < 8) {
-            offset *= 2;
-        } else if (tempFieldItem.objectType >= 8) {
+            offset = 8;
+        } else if (tempFieldItem.objectType > 8) {
             //do nothing, offset is set correctly for this case (NODE_OFFSET)
         }
 
@@ -580,6 +580,87 @@ bool checkIfTwoNodesInSightOfEachOther(point point1, point point2) {
             return false;
         }
     }
+    
+    unsigned char yDiff = abs(point2.y - point1.y);
+    unsigned char xDiff = abs(point2.x - point1.x);
+    
+    short theta = atan2(yDiff, xDiff);
+    
+    point offsetPoint1;
+    point offsetPoint2;
+    point roverOffsetPoint1;
+    point roverOffsetPoint2;
+    
+    unsigned char offset=1;
+    
+    //if statement calculates what inverted quadrant the point is in
+    if (point1.x > point2.x && point1.y >= point2.y) { //upper left inverted quadrant (I standard quad math))
+        offsetPoint1.x = point2.x+offset*cos(theta);
+        offsetPoint1.y = point2.y-offset*sin(theta);
+        
+        offsetPoint2.x = point2.x-offset*cos(theta);
+        offsetPoint2.y = point2.y+offset*sin(theta);
+        
+        roverOffsetPoint1.x = point1.x+offset*cos(theta);
+        roverOffsetPoint1.y = point1.y-offset*sin(theta);
+        
+        roverOffsetPoint2.x = point1.x-offset*cos(theta);
+        roverOffsetPoint2.y = point1.y+offset*sin(theta);
+        
+    } else if (point1.x <= point2.x && point1.y > point2.y) { //upper right inverted quadrant (II standard quad math))
+        offsetPoint1.x = point2.x+offset*cos(theta);
+        offsetPoint1.y = point2.y+offset*sin(theta);
+        
+        offsetPoint2.x = point2.x-offset*cos(theta);
+        offsetPoint2.y = point2.y-offset*sin(theta);
+        
+        roverOffsetPoint1.x = point1.x+offset*cos(theta);
+        roverOffsetPoint1.y = point1.y+offset*sin(theta);
+        
+        roverOffsetPoint2.x = point1.x-offset*cos(theta);
+        roverOffsetPoint2.y = point1.y-offset*sin(theta);
+        
+    } else if (point1.x >= point2.x && point1.y < point2.y) { // bottom left inverted quadrant (IV standard quad math))
+        offsetPoint1.x = point2.x-offset*cos(theta);
+        offsetPoint1.y = point2.y-offset*sin(theta);
+        
+        offsetPoint2.x = point2.x+offset*cos(theta);
+        offsetPoint2.y = point2.y+offset*sin(theta);
+        
+        roverOffsetPoint1.x = point1.x-offset*cos(theta);
+        roverOffsetPoint1.y = point1.y-offset*sin(theta);
+        
+        roverOffsetPoint2.x = point1.x+offset*cos(theta);
+        roverOffsetPoint2.y = point1.y+offset*sin(theta);
+        
+    } else { //bottom right in inverted quadrant (III standard quad math))
+        offsetPoint1.x = point2.x-offset*cos(theta);
+        offsetPoint1.y = point2.y+offset*sin(theta);
+        
+        offsetPoint2.x = point2.x+offset*cos(theta);
+        offsetPoint2.y = point2.y-offset*sin(theta);
+        
+        roverOffsetPoint1.x = point1.x-offset*cos(theta);
+        roverOffsetPoint1.y = point1.y+offset*sin(theta);
+        
+        roverOffsetPoint2.x = point1.x+offset*cos(theta);
+        roverOffsetPoint2.y = point1.y-offset*sin(theta);
+    }
+    
+    for (i = 0; i < crossSquareStackTop; i++) { //subtract 2
+        if (checkIntersectionOfLineAndCrossSquare(roverOffsetPoint1, offsetPoint1, crossSquareStack[i].topLeft, crossSquareStack[i].bottomRight)) {
+            return false;
+        }
+    }
+    
+    for (i = 0; i < crossSquareStackTop; i++) { //subtract 2
+        if (checkIntersectionOfLineAndCrossSquare(roverOffsetPoint2, offsetPoint2, crossSquareStack[i].topLeft, crossSquareStack[i].bottomRight)) {
+            return false;
+        }
+    }
+    //calculate offset points at facing angle
+    
+    
     return true;
 }
 

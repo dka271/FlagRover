@@ -661,7 +661,7 @@ void NAVIGATION_Tasks ( void )
     SetDirectionForwards();
     //I2C Initialization Stuff
     //Open the I2C
-    int i2cCount = -500;//Set this low so the color sensors are guaranteed to receive power by the time we start initializing them
+    int i2cCount = -1000;//Set this low so the color sensors are guaranteed to receive power by the time we start initializing them
     while (DRV_I2C_Status(sysObj.drvI2C0) != SYS_STATUS_READY){
         //Wait for the I2C to be ready to be opened
         //FOR TESTING

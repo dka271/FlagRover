@@ -1010,8 +1010,8 @@ void NAVIGATION_Tasks ( void )
                             ignoringTape = 1;
                             ignoreTapeCount = 0;
                             AddMovement(cm2tick(5), ROVER_DIRECTION_BACKWARDS);
-                            AddMovement(deg2tick(150), ROVER_DIRECTION_LEFT);
-                            AddMovement(cm2tick(5), ROVER_DIRECTION_FORWARDS);
+                            AddMovement(deg2tick(47), ROVER_DIRECTION_LEFT);
+                            AddMovement(cm2tick(10), ROVER_DIRECTION_FORWARDS);
                             SetMovementGoal();
                             noPathFoundCount = 0;
                         }

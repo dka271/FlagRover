@@ -94,7 +94,7 @@ void commSendMsg(unsigned char msg[COMM_QUEUE_BUFFER_SIZE]) {
     xQueueSendToBack(commQueue, msg, portMAX_DELAY);
 }
 
-void commSendMsgToWifiQueue(unsigned char msg[SEND_QUEUE_BUFFER_SIZE]){
+void commSendMsgToWifiQueue(unsigned char msg[SEND_QUEUE_BUFFER_SIZE]) {
     int j;
     for (j = 0; j < strlen(msg); j++) {
         xQueueSendToBack(sendQueue, &msg[j], portMAX_DELAY);
@@ -272,16 +272,16 @@ void sendTapeSignalToSensor() {
     } else {
         source = 'c';
     }
-    
+
     unsigned char dest = 's';
     unsigned char messageType = 't';
     sprintf(testString, "*{\"S\":\"%c\",\"T\":\"%c\",\"M\":\"%c\",\"C\":", source, dest, messageType);
-    
+
     int checkSum = calculateJsonStringCheckSum(testString);
-    
+
     sprintf(jsonFieldItemEnd, "%d}~", checkSum);
     strcat(testString, jsonFieldItemEnd);
-    
+
     unsigned char i;
     for (i = 0; i < strlen(testString); i++) {
         xQueueSendToBack(sendQueue, &testString[i], portMAX_DELAY);
@@ -301,15 +301,15 @@ void respondToFlagRoverRegionQuery(unsigned char from) {
         dest = 't';
     }
     unsigned char source = 'f';
-    
+
     unsigned char messageType = 'e';
     sprintf(msg, "*{\"S\":\"%c\",\"T\":\"%c\",\"M\":\"%c\",\"R\":%d,\"C\":", source, dest, messageType, locationState);
-    
+
     int checkSum = calculateJsonStringCheckSum(msg);
-    
+
     sprintf(jsonFieldItemEnd, "%d}~", checkSum);
     strcat(msg, jsonFieldItemEnd);
-    
+
     unsigned char i;
     for (i = 0; i < strlen(msg); i++) {
         xQueueSendToBack(sendQueue, &msg[i], portMAX_DELAY);
@@ -323,14 +323,14 @@ void flagRoverEnteredNewZone() {
     unsigned char source = 'f';
     unsigned char dest = 'a';
     unsigned char messageType = 'e';
-    
+
     sprintf(msg, "*{\"S\":\"%c\",\"T\":\"%c\",\"M\":\"%c\",\"R\":%d,\"C\":", source, dest, messageType, locationState);
-    
+
     int checkSum = calculateJsonStringCheckSum(msg);
-    
+
     sprintf(jsonFieldItemEnd, "%d}~", checkSum);
     strcat(msg, jsonFieldItemEnd);
-    
+
     unsigned char i;
     for (i = 0; i < strlen(msg); i++) {
         xQueueSendToBack(sendQueue, &msg[i], portMAX_DELAY);
@@ -375,12 +375,12 @@ void COMMUNICATION_Tasks(void) {
                 //coming from the pathfind thread
             } else if (msgId == COMM_UART_ID) {
                 //Handle input from the WiFly
-                
+
                 //Handle receiving from Daniel's test servers
                 motorTestCommReceive(receivemsg);
                 electromagnetTestCommReceive(receivemsg);
-                
-                
+
+
                 dbgOutputLoc(DBG_LOC_COMM_IF_UART);
                 if (UNIT_TESTING) {
                     commQueueReceiveTest(receivemsg);
@@ -410,7 +410,7 @@ void COMMUNICATION_Tasks(void) {
                         } else {
                             //bad
                             NumBadChecksums++;
-//                            dbgOutputVal(NumBadChecksums);
+                            //                            dbgOutputVal(NumBadChecksums);
                             dbgOutputLoc(DBG_LOC_BAD_ERROR - 7);
                         }
                     }
@@ -423,7 +423,7 @@ void COMMUNICATION_Tasks(void) {
                     } else {
                         //This is bad
                         NumDroppedMessages++;
-//                        dbgOutputVal(NumDroppedMessages);
+                        //                        dbgOutputVal(NumDroppedMessages);
                         dbgOutputLoc(DBG_LOC_BAD_ERROR - 6);
                     }
                     PreviousSequenceNumber = SequenceNumber;
@@ -434,18 +434,18 @@ void COMMUNICATION_Tasks(void) {
                     } else if (Source == 'w') {
                         Nop();
                         if (jsonGetMessageType(receivemsg, MessageType)) {
-                        //error
-                        dbgOutputLoc(DBG_LOC_BAD_ERROR - 3);
+                            //error
+                            dbgOutputLoc(DBG_LOC_BAD_ERROR - 3);
                         } else if (MessageType[0] == 'g') {
                             Nop();
                             msgDefNotGlobal[0] = 'g';
-                            
+
                             msgDefNotGlobal[PATH_MESSAGE_TYPE_IDX] = PATH_ITEM_TEST;
                             msgDefNotGlobal[PATH_SOURCE_ID_IDX] = (PATH_COMMUNICATION_ID & 0x00000003) << PATH_SOURCE_ID_OFFSET;
                             msgDefNotGlobal[PATH_CHECKSUM_IDX] = pathCalculateChecksum(msgDefNotGlobal);
-                        
+
                             pathSendMsg(msgDefNotGlobal);
-                            
+
                         } else if (MessageType[0] == 'l') {
                             Nop();
                             if (jsonGetFieldItem(receivemsg, &testFieldItem)) {
@@ -453,7 +453,7 @@ void COMMUNICATION_Tasks(void) {
                                 dbgOutputLoc(DBG_LOC_BAD_ERROR - 6);
                             } else {
                                 msgDefNotGlobal[0] = 'l';
-                            
+
                                 msgDefNotGlobal[1] = testFieldItem.objectType;
                                 msgDefNotGlobal[2] = testFieldItem.centerX;
                                 msgDefNotGlobal[3] = testFieldItem.centerY;
@@ -468,7 +468,7 @@ void COMMUNICATION_Tasks(void) {
                                 pathSendMsg(msgDefNotGlobal);
                             }
                         } else {
-                            
+
                             if (jsonGetFieldItem(receivemsg, &testFieldItem)) {
                                 //error
                                 dbgOutputLoc(DBG_LOC_BAD_ERROR - 6);
@@ -491,8 +491,8 @@ void COMMUNICATION_Tasks(void) {
                         }
                     } else if (Source == 'v') {
                         if (jsonGetMessageType(receivemsg, MessageType)) {
-                        //error
-                        dbgOutputLoc(DBG_LOC_BAD_ERROR - 3);
+                            //error
+                            dbgOutputLoc(DBG_LOC_BAD_ERROR - 3);
                         } else if (MessageType[0] == 'z') {
                             sendStartMessageToNavigationThread();
                         } else if (MessageType[0] == 'u') {
@@ -524,11 +524,11 @@ void COMMUNICATION_Tasks(void) {
                 //Handle sending every
                 dbgOutputLoc(DBG_LOC_COMM_IF_SEND);
                 unsigned char bufferToReadFrom[RECEIVE_BUFFER_SIZE];
-//                commSendMsgToSendQueue(bufferToReadFrom);
+                //                commSendMsgToSendQueue(bufferToReadFrom);
             } else if (msgId == COMM_OTHER_ID) { //For server defined tests
                 //Handle other stuff
                 //Handle sending to Daniel's test servers
-				motorTestCommSend(receivemsg);
+                motorTestCommSend(receivemsg);
             }
         }
     }

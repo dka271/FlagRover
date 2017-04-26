@@ -374,24 +374,24 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                             angleTicks *= -1;
                             angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
-                                AddMovement(angleTicks, turn2Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_RIGHT);
                             }else{
-                                AddMovement(angleTicks, turn1Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_LEFT);
                             }
                         }else{
                             //Left turn
                             angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
-                                AddMovement(angleTicks, turn1Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_LEFT);
                             }else{
-                                AddMovement(angleTicks, turn2Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_RIGHT);
                             }
                         }
                     }
                     AddMovement(cm2tick(10), ROVER_DIRECTION_FORWARDS);
                     ignoreTapeCount = -30;
                 }else if (locationState == CROSSED_2_LINES){
-                    AddMovement(cm2tick(5), ROVER_DIRECTION_FORWARDS);
+                    AddMovement(cm2tick(7), ROVER_DIRECTION_FORWARDS);
                     ignoreTapeCount = -30;
                 }else if (locationState == CROSSED_1_LINES){
                     //Orient ourselves towards the line
@@ -404,7 +404,7 @@ void HandleColorSensorData(unsigned char ColorSensorID){
 //                        angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
 //                        AddMovement(angleTicks, turn2Direction);
 //                    }
-                    AddMovement(cm2tick(5), ROVER_DIRECTION_FORWARDS);
+                    AddMovement(cm2tick(7), ROVER_DIRECTION_FORWARDS);
                     ignoreTapeCount = -40;
                 }else{
                     AddMovement(cm2tick(20), ROVER_DIRECTION_FORWARDS);
@@ -462,7 +462,7 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                 }
             }else if (csMeOnTape && !ignoringTape){
                 //Back up
-                AddMovement(cm2tick(4), ROVER_DIRECTION_BACKWARDS);
+                AddMovement(cm2tickF(4.5), ROVER_DIRECTION_BACKWARDS);
                 SetMovementGoal();
                 ignoringTape = 1;
                 ignoreTapeCount = 20;
@@ -850,7 +850,7 @@ void NAVIGATION_Tasks ( void )
                     moveGoalIdx = 0xff;
                     ticksRemaining = 0;
                     desiredSpeed = ROVER_SPEED_STOPPED;
-                    moveAmount[moveLastIdx] = cm2tick(20);
+                    moveAmount[moveLastIdx] = cm2tick(50);
                     moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                     moveLastIdx++;
                     moveGoalIdx = moveLastIdx;

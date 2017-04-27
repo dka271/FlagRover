@@ -249,6 +249,9 @@ void reconstructPath(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES], unsig
 bool isClosedSetEmpty();
 void sendPathToNavigationThread(unsigned char path[MAXIMUM_NUMBER_OF_IN_SIGHT_NODES]);
 unsigned char uniqueIDMapper(unsigned char startingID);
+void generateRandomNodesOnField();
+point generateRandomNode();
+void addARandomNodeToList();
 
 /*******************************************************************************
   Function:

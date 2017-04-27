@@ -148,6 +148,8 @@ bool DoWeCrossLineQuestionMark(){
         case (CROSSED_0_LINES):{
             region center = regionList[CENTRAL_ZONE];
             unsigned char centerY = (center.y - (center.length >> 1)) << 1;
+            unsigned char centerWidth = center.length << 1;
+            unsigned char ourX = ((unsigned char) GetLocationX());
             unsigned char ourY = ((unsigned char) GetLocationY());
             
             //FOR TESTING, REMOVE LATER
@@ -157,7 +159,7 @@ bool DoWeCrossLineQuestionMark(){
             }
             //END TESTING SECTION
             
-            if (ourY >= centerY - 10){
+            if (ourY >= centerY - 10 && ourX >= 6 && ourX <= (centerWidth - 6)){
                 locationState = CROSSED_1_LINES;
                 flagRoverEnteredNewZone();
                 return true;
@@ -374,24 +376,24 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                             angleTicks *= -1;
                             angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
-                                AddMovement(angleTicks, turn2Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_RIGHT);
                             }else{
-                                AddMovement(angleTicks, turn1Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_LEFT);
                             }
                         }else{
                             //Left turn
                             angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
-                                AddMovement(angleTicks, turn1Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_LEFT);
                             }else{
-                                AddMovement(angleTicks, turn2Direction);
+                                AddMovement(angleTicks, ROVER_DIRECTION_RIGHT);
                             }
                         }
                     }
                     AddMovement(cm2tick(10), ROVER_DIRECTION_FORWARDS);
                     ignoreTapeCount = -30;
                 }else if (locationState == CROSSED_2_LINES){
-                    AddMovement(cm2tick(5), ROVER_DIRECTION_FORWARDS);
+                    AddMovement(cm2tick(7), ROVER_DIRECTION_FORWARDS);
                     ignoreTapeCount = -30;
                 }else if (locationState == CROSSED_1_LINES){
                     //Orient ourselves towards the line
@@ -404,7 +406,7 @@ void HandleColorSensorData(unsigned char ColorSensorID){
 //                        angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
 //                        AddMovement(angleTicks, turn2Direction);
 //                    }
-                    AddMovement(cm2tick(5), ROVER_DIRECTION_FORWARDS);
+                    AddMovement(cm2tick(7), ROVER_DIRECTION_FORWARDS);
                     ignoreTapeCount = -40;
                 }else{
                     AddMovement(cm2tick(20), ROVER_DIRECTION_FORWARDS);
@@ -422,11 +424,12 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                         //Both on tape
                         //Drop the flag
                         ElectromagnetSetOff();
-                        AddMovement(cm2tick(2), ROVER_DIRECTION_FORWARDS);
-                        AddMovement(cm2tick(8), ROVER_DIRECTION_BACKWARDS);
+                        AddMovement(cm2tick(3), ROVER_DIRECTION_FORWARDS);
+                        AddMovement(cm2tick(9), ROVER_DIRECTION_BACKWARDS);
+                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
                         SetMovementGoal();
                         ignoringTape = 1;
-                        ignoreTapeCount = -15;
+                        ignoreTapeCount = -35;
                         orientAttempts = 0;
                     }else{
                         //This one on tape
@@ -462,7 +465,7 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                 }
             }else if (csMeOnTape && !ignoringTape){
                 //Back up
-                AddMovement(cm2tick(4), ROVER_DIRECTION_BACKWARDS);
+                AddMovement(cm2tickF(4.5), ROVER_DIRECTION_BACKWARDS);
                 SetMovementGoal();
                 ignoringTape = 1;
                 ignoreTapeCount = 20;
@@ -705,7 +708,9 @@ void NAVIGATION_Tasks ( void )
             //Handle a specific message
             if (msgId == NAV_TIMER_COUNTER_3_ID){
                 //Motor 2 Encoder Message Handler
-                speed2 = (receivemsgint & 0x0000ffff) - previousValue2;
+                if ((receivemsgint & 0x0000ffff) >= previousValue2){
+                    speed2 = (receivemsgint & 0x0000ffff) - previousValue2;
+                }
                 previousValue2 = receivemsgint & 0x0000ffff;
                 
                 //Handle path controls
@@ -746,7 +751,9 @@ void NAVIGATION_Tasks ( void )
                 m2PID = PID2(desiredSpeed, speed2);
             }else if (msgId == NAV_TIMER_COUNTER_5_ID){
                 //Motor 2 Encoder Message Handler
-                speed1 = (receivemsgint & 0x0000ffff) - previousValue1;
+                if ((receivemsgint & 0x0000ffff) >= previousValue1){
+                    speed1 = (receivemsgint & 0x0000ffff) - previousValue1;
+                }
                 previousValue1 = receivemsgint & 0x0000ffff;
                 
                 //Handle remaining distance
@@ -850,7 +857,7 @@ void NAVIGATION_Tasks ( void )
                     moveGoalIdx = 0xff;
                     ticksRemaining = 0;
                     desiredSpeed = ROVER_SPEED_STOPPED;
-                    moveAmount[moveLastIdx] = cm2tick(20);
+                    moveAmount[moveLastIdx] = cm2tick(50);
                     moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                     moveLastIdx++;
                     moveGoalIdx = moveLastIdx;

@@ -75,6 +75,16 @@ int jsonGetChecksumString(unsigned char *buffer, unsigned char *checksum);
 //Returns 0 if success, -1 if the key is not present, 1 if there was a parse error
 int jsonGetFieldItem(unsigned char *buffer, fieldItem *item);
 
+//Finds the arbitrarily requested info from the jsonIdentity
+//Returns 0 if success, -1 if the key is not present, 1 if there was a parse error
+int jsonGetPassedInCharacter(unsigned char *buffer, unsigned char *destination, unsigned char jsonIdentity);
+
+//Finds an integer from 0 to 255
+int jsonGetPassedInUInt8(unsigned char *buffer, unsigned char *destination, unsigned char jsonIdentity);
+
+//Finds an integer
+int jsonGetPassedInInt(unsigned char *buffer, unsigned int *destination, unsigned char jsonIdentity);
+
 //Return 0 upon success, 1 upon failure
 int parseCharacter(char* bufferToReadFrom, int index, unsigned char *info);
 int parseString(char* bufferToReadFrom, int index, unsigned char *info);

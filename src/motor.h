@@ -72,7 +72,7 @@ extern "C" {
 #define TEST_COMM_SPEED_IDX 0
 #define TEST_NAV_ID_IDX 1
 #define TEST_NAV_DATA_IDX 0
-#define MOTOR_PATHFINDING_INTEGRATION_TESTING 1
+#define MOTOR_PATHFINDING_INTEGRATION_TESTING 0
     
 //Useful constants
 #define ROVER_DIRECTION_LEFT 0x0003
@@ -91,6 +91,9 @@ extern "C" {
 #define ROVER_TICKS_REMAINING_NONE 0
 #define CALCULATE_IN_INCHES ((bool) true)
 #define CALCULATE_IN_CENTIMETERS ((bool) false)
+#define OFFSET_FORWARD 118
+#define OFFSET_LEFT 52
+#define OFFSET_RIGHT 32
 
 // *****************************************************************************
 // *****************************************************************************

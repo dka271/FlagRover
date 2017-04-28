@@ -396,11 +396,13 @@ int CalculateAngleFromPoints(int x1, int y1, int x2, int y2){
     ticksToReturn = deg2tickF(angleDeg);
 //    ticksToReturn -= deg2tickF(orientation);
     //Account for overshooting
-    if (ticksToReturn > 0){
-        ticksToReturn -= angleOffsetLeft;
-    }else if (ticksToReturn < 0){
-        ticksToReturn -= angleOffsetRight;
-    }
+//    if (angleDeg >= 30){
+//        if (ticksToReturn > 0){
+//            ticksToReturn -= angleOffsetLeft;
+//        }else if (ticksToReturn < 0){
+//            ticksToReturn += angleOffsetRight;
+//        }
+//    }
     return ticksToReturn;
 }
 

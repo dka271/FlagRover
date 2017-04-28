@@ -250,6 +250,7 @@ unsigned char orientAttempts = 0;
 bool pixyCamFoundFlag = false;
 bool pickedUpFlag = false;
 bool sawFlagOnce = false;
+bool goingToFlag = false;
 //Path stuff
 unsigned int moveAmount[100];
 unsigned char moveType[100];
@@ -348,11 +349,11 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                 }
                 //Make a bunch of small turns instead of one large turn so that we can get oriented as accurately as possible
                 AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
-                AddMovement(deg2tick(20), dir);
-                AddMovement(deg2tick(20), dir);
-                AddMovement(deg2tick(20), dir);
-                AddMovement(deg2tick(20), dir);
-                AddMovement(deg2tick(20), dir);
+                AddMovement(deg2tick(24), dir);
+                AddMovement(deg2tick(24), dir);
+                AddMovement(deg2tick(24), dir);
+                AddMovement(deg2tick(24), dir);
+                AddMovement(deg2tick(24), dir);
                 SetMovementGoal();
             }
         }else if (movementState == STATE_WAITING_FOR_SENSOR_FEEDBACK && csMeOnTape){
@@ -429,6 +430,7 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                         ignoringTape = 1;
                         ignoreTapeCount = -35;
                         orientAttempts = 0;
+                        goingToFlag = false;
                     }else{
                         //This one on tape
                         SetDirectionBackwards();
@@ -441,23 +443,76 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                             orientAttempts = 0;
                         }else{
                             //Attempt to orient to the line
-                            if (INVERTED_X_AXIS){
-                                AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
-                                AddMovement(deg2tick(20), turn1Direction);
-                                AddMovement(deg2tick(20), turn1Direction);
-                                AddMovement(deg2tick(20), turn1Direction);
-                                AddMovement(deg2tick(20), turn1Direction);
-                                AddMovement(deg2tick(20), turn1Direction);
-                                SetMovementGoal();
-                            }else{
-                                AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
-                                AddMovement(deg2tick(20), turn2Direction);
-                                AddMovement(deg2tick(20), turn2Direction);
-                                AddMovement(deg2tick(20), turn2Direction);
-                                AddMovement(deg2tick(20), turn2Direction);
-                                AddMovement(deg2tick(20), turn2Direction);
-                                SetMovementGoal();
-                            }
+//                            if (goingToFlag){
+                                if (INVERTED_X_AXIS){
+                                    AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
+                                    AddMovement(deg2tick(24), turn1Direction);
+                                    AddMovement(deg2tick(24), turn1Direction);
+                                    AddMovement(deg2tick(24), turn1Direction);
+//                                    AddMovement(cm2tick(2), ROVER_DIRECTION_BACKWARDS);
+                                    AddMovement(deg2tick(24), turn1Direction);
+                                    AddMovement(deg2tick(24), turn1Direction);
+                                    SetMovementGoal();
+                                }else{
+                                    AddMovement(cm2tick(1), ROVER_DIRECTION_FORWARDS);
+                                    AddMovement(deg2tick(24), turn2Direction);
+                                    AddMovement(deg2tick(24), turn2Direction);
+                                    AddMovement(deg2tick(24), turn2Direction);
+//                                    AddMovement(cm2tick(2), ROVER_DIRECTION_BACKWARDS);
+                                    AddMovement(deg2tick(24), turn2Direction);
+                                    AddMovement(deg2tick(24), turn2Direction);
+                                    SetMovementGoal();
+                                }
+//                            }else{
+//                                orientAttempts = 0;
+//                                if (hasFlagLocation){
+//                                    int angleTicks = CalculateAngleFromPoints((unsigned char) GetLocationX(), (unsigned char) GetLocationY(), flagX, flagY);
+//                                    angleTicks = AdjustAngleToRotate(angleTicks, GetOrientation());
+//                                    if (angleTicks < 0){
+//                                        //Right turn
+//                                        angleTicks *= -1;
+//                                        if (INVERTED_X_AXIS){
+//                                            AddMovement(angleTicks, ROVER_DIRECTION_RIGHT);
+//                                        }else{
+//                                            AddMovement(angleTicks, ROVER_DIRECTION_LEFT);
+//                                        }
+//                                    }else{
+//                                        //Left turn
+//                                        if (INVERTED_X_AXIS){
+//                                            AddMovement(angleTicks, ROVER_DIRECTION_LEFT);
+//                                        }else{
+//                                            AddMovement(angleTicks, ROVER_DIRECTION_RIGHT);
+//                                        }
+//                                    }
+//                                }
+//                                AddMovement(cm2tick(2), ROVER_DIRECTION_FORWARDS);
+//                                ignoreTapeCount = -10;
+////                                if (cs1OnTape){
+////                                    if (INVERTED_X_AXIS){
+////                                        AddMovement(cm2tick(1), ROVER_DIRECTION_BACKWARDS);
+////                                        SetMovementGoal();
+////                                    }else{
+////                                        AddMovement(cm2tick(1), ROVER_DIRECTION_BACKWARDS);
+////                                        SetMovementGoal();
+////                                    }
+////                                }else if (!cs1OnTape && cs2OnTape){
+////                                    if (INVERTED_X_AXIS){
+////                                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
+////                                        SetMovementGoal();
+////                                    }else{
+////                                        AddMovement(deg2tick(20), ROVER_DIRECTION_RIGHT);
+////                                        SetMovementGoal();
+////                                    }
+////                                }else{
+////                                    if (INVERTED_X_AXIS){
+////                                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
+////                                        SetMovementGoal();
+////                                    }else{
+////                                        AddMovement(deg2tick(20), ROVER_DIRECTION_RIGHT);
+////                                        SetMovementGoal();
+////                                    }
+////                                }
+//                            }
                         }
                     }
                 }
@@ -544,6 +599,11 @@ bool HandleMovementQueue(){
             int minRotation = deg2tickF(30);
             if (ticksRemaining >= minRotation){
                 //Normal turning speed
+                if (INVERTED_X_AXIS){
+                    ticksRemaining -= OFFSET_RIGHT;
+                }else{
+                    ticksRemaining -= OFFSET_LEFT;
+                }
                 desiredSpeed = ROVER_SPEED_TURNING;
             }else if (ticksRemaining >= minRotation / 8){
                 //Slow turning speed
@@ -563,6 +623,11 @@ bool HandleMovementQueue(){
             int minRotation = deg2tickF(30);
             if (ticksRemaining >= minRotation){
                 //Normal turning speed
+                if (INVERTED_X_AXIS){
+                    ticksRemaining -= OFFSET_LEFT;
+                }else{
+                    ticksRemaining -= OFFSET_RIGHT;
+                }
                 desiredSpeed = ROVER_SPEED_TURNING;
             }else if (ticksRemaining >= minRotation / 8){
                 //Slow turning speed
@@ -718,6 +783,14 @@ void NAVIGATION_Tasks ( void )
                 //Handle path controls
                 if (HandleMovementQueue()){
                     //Goal reached
+                    if (locationState == CROSSED_3_LINES){
+                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
+                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
+                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
+                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
+                        AddMovement(deg2tick(20), ROVER_DIRECTION_LEFT);
+                        SetMovementGoal();
+                    }
                 }
                 
                 //Handle remaining distance
@@ -863,6 +936,7 @@ void NAVIGATION_Tasks ( void )
                     moveType[moveLastIdx] = ROVER_DIRECTION_FORWARDS;
                     moveLastIdx++;
                     moveGoalIdx = moveLastIdx;
+                    goingToFlag = true;
                 }
             }else if (msgId == NAV_PATHFINDING_ID){
                 //Handle stuff from the pathfinding queue
@@ -915,15 +989,15 @@ void NAVIGATION_Tasks ( void )
                                         SetOrientation(90);
                                         orientationReceived = true;
                                     }
-//                                    else if (startX <= 14 && startY >= 30 && startY <= (((CenterZone.y - (CenterZone.width >> 1)) << 1) - 8)){
-//                                        //On close sensor zone
-//                                        if (INVERTED_X_AXIS){
-//                                            SetOrientation(180);
-//                                        }else{
-//                                            SetOrientation(0);
-//                                        }
-//                                        orientationReceived = true;
-//                                    }
+                                    else if (startX <= 14 && startY >= 30 && startY <= (((CenterZone.y - (CenterZone.width >> 1)) << 1) - 8)){
+                                        //On close sensor zone
+                                        if (INVERTED_X_AXIS){
+                                            SetOrientation(180);
+                                        }else{
+                                            SetOrientation(0);
+                                        }
+                                        orientationReceived = true;
+                                    }
                                     else if (startX >= ((CenterZone.length - 7) << 1) && startY >= 30 && startY <= (((CenterZone.y - (CenterZone.width >> 1)) << 1) - 8)){
                                         //On far sensor zone
                                         if (INVERTED_X_AXIS){

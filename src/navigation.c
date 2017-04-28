@@ -374,7 +374,6 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                         if (angleTicks < 0){
                             //Right turn
                             angleTicks *= -1;
-                            angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
                                 AddMovement(angleTicks, ROVER_DIRECTION_RIGHT);
                             }else{
@@ -382,7 +381,6 @@ void HandleColorSensorData(unsigned char ColorSensorID){
                             }
                         }else{
                             //Left turn
-                            angleTicks += deg2tick(15);
                             if (INVERTED_X_AXIS){
                                 AddMovement(angleTicks, ROVER_DIRECTION_LEFT);
                             }else{
@@ -547,10 +545,12 @@ bool HandleMovementQueue(){
             if (ticksRemaining >= minRotation){
                 //Normal turning speed
                 desiredSpeed = ROVER_SPEED_TURNING;
-            }else{
+            }else if (ticksRemaining >= minRotation / 8){
                 //Slow turning speed
                 desiredSpeed = ROVER_SPEED_SLOW_TURNING;
-                ticksRemaining += 30;
+            }else{
+                //Very slow turning speed
+                desiredSpeed = ROVER_SPEED_VERY_SLOW;
             }
             sprintf(testMsg, "*Command: Left Turn, Ticks = %d~", ticksRemaining);
         }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_RIGHT){
@@ -564,10 +564,12 @@ bool HandleMovementQueue(){
             if (ticksRemaining >= minRotation){
                 //Normal turning speed
                 desiredSpeed = ROVER_SPEED_TURNING;
-            }else{
+            }else if (ticksRemaining >= minRotation / 8){
                 //Slow turning speed
                 desiredSpeed = ROVER_SPEED_SLOW_TURNING;
-                ticksRemaining += 30;
+            }else{
+                //Very slow turning speed
+                desiredSpeed = ROVER_SPEED_VERY_SLOW;
             }
             sprintf(testMsg, "*Command: Right Turn, Ticks = %d~", ticksRemaining);
         }else if (moveType[moveCurrentIdx] == ROVER_DIRECTION_FORWARDS){
@@ -794,7 +796,7 @@ void NAVIGATION_Tasks ( void )
                     pathfindingCount = 0;
                     
                     //Update position
-                    sprintf(commMsg,"*{\"S\":\"f\",\"T\":\"a\",\"M\":\"p\",\"N\":1,\"F\":[1,12,6,6,%d,%d,0],\"C\":1}~", (int) (GetLocationX() / 2), (int) (GetLocationY() / 2));
+                    sprintf(commMsg,"*{\"S\":\"f\",\"T\":\"a\",\"M\":\"p\",\"N\":1,\"F\":[1,12,6,6,%d,%d,%d],\"C\":1}~", (int) (GetLocationX() / 2), (int) (GetLocationY() / 2), (int) GetOrientation());
                     commSendMsgToWifiQueue(commMsg);
                 }
                 
@@ -849,7 +851,7 @@ void NAVIGATION_Tasks ( void )
                     sprintf(testMsg, "*{Pixy Cam Value = %d}~",receivemsg[0] + (receivemsg[1] << 8));
                     commSendMsgToWifiQueue(testMsg);
                 }
-                if (locationState == CROSSED_3_LINES){
+                if (locationState == CROSSED_3_LINES && !ignoringTape){
                     //Only do this in the flag zone
                     //Charge le flag
                     moveCurrentIdx = 0;
@@ -912,15 +914,17 @@ void NAVIGATION_Tasks ( void )
                                         //On center zone
                                         SetOrientation(90);
                                         orientationReceived = true;
-                                    }else if (startX <= 14 && startY >= 30 && startY <= ((CenterZone.y - (CenterZone.width + 4)) << 1)){
-                                        //On close sensor zone
-                                        if (INVERTED_X_AXIS){
-                                            SetOrientation(180);
-                                        }else{
-                                            SetOrientation(0);
-                                        }
-                                        orientationReceived = true;
-                                    }else if (startX >= ((CenterZone.length - 7) << 1) && startY >= 30 && startY <= ((CenterZone.y - (CenterZone.width + 4)) << 1)){
+                                    }
+//                                    else if (startX <= 14 && startY >= 30 && startY <= (((CenterZone.y - (CenterZone.width >> 1)) << 1) - 8)){
+//                                        //On close sensor zone
+//                                        if (INVERTED_X_AXIS){
+//                                            SetOrientation(180);
+//                                        }else{
+//                                            SetOrientation(0);
+//                                        }
+//                                        orientationReceived = true;
+//                                    }
+                                    else if (startX >= ((CenterZone.length - 7) << 1) && startY >= 30 && startY <= (((CenterZone.y - (CenterZone.width >> 1)) << 1) - 8)){
                                         //On far sensor zone
                                         if (INVERTED_X_AXIS){
                                             SetOrientation(0);
@@ -934,7 +938,7 @@ void NAVIGATION_Tasks ( void )
                                         //On center zone
                                         SetOrientation(90);
                                         orientationReceived = true;
-                                    }else if (startX <= 14 && startY >= 30 && startY <= ((CenterZone.y - (CenterZone.width + 4)) << 1)){
+                                    }else if (startX <= 14 && startY >= 30 && startY <= (((CenterZone.y - (CenterZone.width >> 1)) << 1) - 4)){
                                         //On close sensor zone
                                         if (INVERTED_X_AXIS){
                                             SetOrientation(180);
@@ -942,7 +946,7 @@ void NAVIGATION_Tasks ( void )
                                             SetOrientation(0);
                                         }
                                         orientationReceived = true;
-                                    }else if (startX >= ((CenterZone.length - 7) << 1) && startY >= 30 && startY <= ((CenterZone.y - (CenterZone.width + 4)) << 1)){
+                                    }else if (startX >= ((CenterZone.length - 7) << 1) && startY >= 30 && startY <= (((CenterZone.y - (CenterZone.width >> 1)) << 1) - 4)){
                                         //On far sensor zone
                                         if (INVERTED_X_AXIS){
                                             SetOrientation(0);

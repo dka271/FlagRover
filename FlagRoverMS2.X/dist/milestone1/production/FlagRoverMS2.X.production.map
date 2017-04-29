@@ -2963,69 +2963,69 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000    0x8f9eb
+.debug_info     0x00000000    0x8fc9b
  *(.debug_info .gnu.linkonce.wi.*)
- .debug_info    0x00000000     0x4210 build/milestone1/production/_ext/1909904406/drv_adc_static.o
- .debug_info    0x00004210     0x5533 build/milestone1/production/_ext/1864120335/drv_tmr_static.o
- .debug_info    0x00009743     0x16f7 build/milestone1/production/_ext/1864120335/drv_tmr_mapping.o
- .debug_info    0x0000ae3a     0x48ed build/milestone1/production/_ext/192191419/drv_usart_mapping.o
- .debug_info    0x0000f727     0x69e8 build/milestone1/production/_ext/192191419/drv_usart_static.o
- .debug_info    0x0001610f     0x4dd9 build/milestone1/production/_ext/192191419/drv_usart_static_byte_model.o
- .debug_info    0x0001aee8     0x4712 build/milestone1/production/_ext/383799649/sys_clk_static.o
- .debug_info    0x0001f5fa     0x3ad0 build/milestone1/production/_ext/956857457/sys_ports_static.o
- .debug_info    0x000230ca     0x5d63 build/milestone1/production/_ext/1555642536/system_init.o
- .debug_info    0x00028e2d     0x555a build/milestone1/production/_ext/1555642536/system_interrupt.o
- .debug_info    0x0002e387     0x3a7d build/milestone1/production/_ext/1555642536/system_exceptions.o
- .debug_info    0x00031e04     0x3ed2 build/milestone1/production/_ext/1555642536/system_tasks.o
- .debug_info    0x00035cd6       0x97 build/milestone1/production/_ext/1555642536/system_interrupt_a.o
- .debug_info    0x00035d6d      0x24d build/milestone1/production/_ext/1555642536/rtos_hooks.o
- .debug_info    0x00035fba     0x3f04 build/milestone1/production/_ext/1360937237/app.o
- .debug_info    0x00039ebe      0x1a2 build/milestone1/production/_ext/1360937237/main.o
- .debug_info    0x0003a060     0x6daa build/milestone1/production/_ext/1360937237/navigation.o
- .debug_info    0x00040e0a     0x6d07 build/milestone1/production/_ext/1360937237/communication.o
- .debug_info    0x00047b11     0x3f7f build/milestone1/production/_ext/1360937237/ms2test.o
- .debug_info    0x0004ba90     0x5807 build/milestone1/production/_ext/1360937237/pathfinding.o
- .debug_info    0x00051297     0x3e9b build/milestone1/production/_ext/1360937237/flagcapture.o
- .debug_info    0x00055132     0x3aba build/milestone1/production/_ext/1360937237/mapping.o
- .debug_info    0x00058bec     0x3a2d build/milestone1/production/_ext/1360937237/LED.o
- .debug_info    0x0005c619     0xb343 build/milestone1/production/_ext/393803906/drv_i2c.o
- .debug_info    0x0006795c      0xaa7 build/milestone1/production/_ext/1423261102/osal_freertos.o
- .debug_info    0x00068403     0x1167 build/milestone1/production/_ext/2019779704/sys_devcon.o
- .debug_info    0x0006956a      0xd58 build/milestone1/production/_ext/2019779704/sys_devcon_pic32mx.o
- .debug_info    0x0006a2c2     0x15bf build/milestone1/production/_ext/1620769490/sys_int_pic32.o
- .debug_info    0x0006b881      0x38e build/milestone1/production/_ext/1366647692/heap_1.o
- .debug_info    0x0006bc0f     0x11b7 build/milestone1/production/_ext/1475386849/port.o
- .debug_info    0x0006cdc6       0xd6 build/milestone1/production/_ext/1475386849/port_asm.o
- .debug_info    0x0006ce9c      0x188 build/milestone1/production/_ext/1241959881/croutine.o
- .debug_info    0x0006d024      0x484 build/milestone1/production/_ext/1241959881/list.o
- .debug_info    0x0006d4a8     0x1937 build/milestone1/production/_ext/1241959881/queue.o
- .debug_info    0x0006eddf     0x2926 build/milestone1/production/_ext/1241959881/tasks.o
- .debug_info    0x00071705      0x186 build/milestone1/production/_ext/1241959881/timers.o
- .debug_info    0x0007188b      0xd5b build/milestone1/production/_ext/1241959881/event_groups.o
- .debug_info    0x000725e6     0x3d40 build/milestone1/production/_ext/1360937237/debug.o
- .debug_info    0x00076326     0x50fd build/milestone1/production/_ext/1360937237/motor.o
- .debug_info    0x0007b423     0x4627 build/milestone1/production/_ext/1360937237/myjson.o
- .debug_info    0x0007fa4a     0x3c86 build/milestone1/production/_ext/1360937237/electromagnet.o
- .debug_info    0x000836d0     0x3a5f build/milestone1/production/_ext/1360937237/linesensing.o
- .debug_info    0x0008712f     0x6b36 build/milestone1/production/_ext/1360937237/myi2c.o
- .debug_info    0x0008dc65      0x131 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(floatunsisf.o)
- .debug_info    0x0008dd96       0xf5 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-bootstrap-exception-handler.o)
- .debug_info    0x0008de8b       0xcf c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-reset.o)
- .debug_info    0x0008df5a       0xd7 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-bootstrap.o)
- .debug_info    0x0008e031       0xe9 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(defaultinterrupt.o)
- .debug_info    0x0008e11a       0xdd c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_atan2f.o)
- .debug_info    0x0008e1f7       0xbf c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_sqrtf.o)
- .debug_info    0x0008e2b6      0x1c6 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(support.o)
- .debug_info    0x0008e47c       0xc4 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(atoi.o)
- .debug_info    0x0008e540       0xc8 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(strcat.o)
- .debug_info    0x0008e608       0xd4 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(sprintf_cdnopuxX.eo)
- .debug_info    0x0008e6dc       0xd5 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(doprnt_cdnopuxX.eo)
- .debug_info    0x0008e7b1       0xc6 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_fputc_simple.o)
- .debug_info    0x0008e877       0xc9 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_flsbuf_simple.o)
- .debug_info    0x0008e940       0xc0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(write.o)
- .debug_info    0x0008ea00       0xc8 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(_mon_putc.o)
- .debug_info    0x0008eac8      0x773 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_udivdi3.o)
- .debug_info    0x0008f23b      0x7b0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_umoddi3.o)
+ .debug_info    0x00000000     0x4220 build/milestone1/production/_ext/1909904406/drv_adc_static.o
+ .debug_info    0x00004220     0x5543 build/milestone1/production/_ext/1864120335/drv_tmr_static.o
+ .debug_info    0x00009763     0x1707 build/milestone1/production/_ext/1864120335/drv_tmr_mapping.o
+ .debug_info    0x0000ae6a     0x48fd build/milestone1/production/_ext/192191419/drv_usart_mapping.o
+ .debug_info    0x0000f767     0x69f8 build/milestone1/production/_ext/192191419/drv_usart_static.o
+ .debug_info    0x0001615f     0x4de9 build/milestone1/production/_ext/192191419/drv_usart_static_byte_model.o
+ .debug_info    0x0001af48     0x4722 build/milestone1/production/_ext/383799649/sys_clk_static.o
+ .debug_info    0x0001f66a     0x3ae0 build/milestone1/production/_ext/956857457/sys_ports_static.o
+ .debug_info    0x0002314a     0x5d73 build/milestone1/production/_ext/1555642536/system_init.o
+ .debug_info    0x00028ebd     0x556a build/milestone1/production/_ext/1555642536/system_interrupt.o
+ .debug_info    0x0002e427     0x3a8d build/milestone1/production/_ext/1555642536/system_exceptions.o
+ .debug_info    0x00031eb4     0x3ee2 build/milestone1/production/_ext/1555642536/system_tasks.o
+ .debug_info    0x00035d96       0xa7 build/milestone1/production/_ext/1555642536/system_interrupt_a.o
+ .debug_info    0x00035e3d      0x25d build/milestone1/production/_ext/1555642536/rtos_hooks.o
+ .debug_info    0x0003609a     0x3f14 build/milestone1/production/_ext/1360937237/app.o
+ .debug_info    0x00039fae      0x1b2 build/milestone1/production/_ext/1360937237/main.o
+ .debug_info    0x0003a160     0x6dba build/milestone1/production/_ext/1360937237/navigation.o
+ .debug_info    0x00040f1a     0x6d17 build/milestone1/production/_ext/1360937237/communication.o
+ .debug_info    0x00047c31     0x3f8f build/milestone1/production/_ext/1360937237/ms2test.o
+ .debug_info    0x0004bbc0     0x5817 build/milestone1/production/_ext/1360937237/pathfinding.o
+ .debug_info    0x000513d7     0x3eab build/milestone1/production/_ext/1360937237/flagcapture.o
+ .debug_info    0x00055282     0x3aca build/milestone1/production/_ext/1360937237/mapping.o
+ .debug_info    0x00058d4c     0x3a3d build/milestone1/production/_ext/1360937237/LED.o
+ .debug_info    0x0005c789     0xb353 build/milestone1/production/_ext/393803906/drv_i2c.o
+ .debug_info    0x00067adc      0xab7 build/milestone1/production/_ext/1423261102/osal_freertos.o
+ .debug_info    0x00068593     0x1177 build/milestone1/production/_ext/2019779704/sys_devcon.o
+ .debug_info    0x0006970a      0xd68 build/milestone1/production/_ext/2019779704/sys_devcon_pic32mx.o
+ .debug_info    0x0006a472     0x15cf build/milestone1/production/_ext/1620769490/sys_int_pic32.o
+ .debug_info    0x0006ba41      0x39e build/milestone1/production/_ext/1366647692/heap_1.o
+ .debug_info    0x0006bddf     0x11c7 build/milestone1/production/_ext/1475386849/port.o
+ .debug_info    0x0006cfa6       0xe6 build/milestone1/production/_ext/1475386849/port_asm.o
+ .debug_info    0x0006d08c      0x198 build/milestone1/production/_ext/1241959881/croutine.o
+ .debug_info    0x0006d224      0x494 build/milestone1/production/_ext/1241959881/list.o
+ .debug_info    0x0006d6b8     0x1947 build/milestone1/production/_ext/1241959881/queue.o
+ .debug_info    0x0006efff     0x2936 build/milestone1/production/_ext/1241959881/tasks.o
+ .debug_info    0x00071935      0x196 build/milestone1/production/_ext/1241959881/timers.o
+ .debug_info    0x00071acb      0xd6b build/milestone1/production/_ext/1241959881/event_groups.o
+ .debug_info    0x00072836     0x3d50 build/milestone1/production/_ext/1360937237/debug.o
+ .debug_info    0x00076586     0x510d build/milestone1/production/_ext/1360937237/motor.o
+ .debug_info    0x0007b693     0x4637 build/milestone1/production/_ext/1360937237/myjson.o
+ .debug_info    0x0007fcca     0x3c96 build/milestone1/production/_ext/1360937237/electromagnet.o
+ .debug_info    0x00083960     0x3a6f build/milestone1/production/_ext/1360937237/linesensing.o
+ .debug_info    0x000873cf     0x6b46 build/milestone1/production/_ext/1360937237/myi2c.o
+ .debug_info    0x0008df15      0x131 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(floatunsisf.o)
+ .debug_info    0x0008e046       0xf5 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-bootstrap-exception-handler.o)
+ .debug_info    0x0008e13b       0xcf c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-reset.o)
+ .debug_info    0x0008e20a       0xd7 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-bootstrap.o)
+ .debug_info    0x0008e2e1       0xe9 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(defaultinterrupt.o)
+ .debug_info    0x0008e3ca       0xdd c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_atan2f.o)
+ .debug_info    0x0008e4a7       0xbf c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_sqrtf.o)
+ .debug_info    0x0008e566      0x1c6 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(support.o)
+ .debug_info    0x0008e72c       0xc4 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(atoi.o)
+ .debug_info    0x0008e7f0       0xc8 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(strcat.o)
+ .debug_info    0x0008e8b8       0xd4 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(sprintf_cdnopuxX.eo)
+ .debug_info    0x0008e98c       0xd5 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(doprnt_cdnopuxX.eo)
+ .debug_info    0x0008ea61       0xc6 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_fputc_simple.o)
+ .debug_info    0x0008eb27       0xc9 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_flsbuf_simple.o)
+ .debug_info    0x0008ebf0       0xc0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(write.o)
+ .debug_info    0x0008ecb0       0xc8 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(_mon_putc.o)
+ .debug_info    0x0008ed78      0x773 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_udivdi3.o)
+ .debug_info    0x0008f4eb      0x7b0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_umoddi3.o)
 
 .debug_abbrev   0x00000000     0x5fb4
  *(.debug_abbrev)
@@ -3091,74 +3091,74 @@ END GROUP
  .debug_abbrev  0x00005d35      0x138 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_udivdi3.o)
  .debug_abbrev  0x00005e6d      0x147 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_umoddi3.o)
 
-.debug_line     0x00000000     0xf96a
+.debug_line     0x00000000     0xfc3a
  *(.debug_line)
- .debug_line    0x00000000      0x7c1 build/milestone1/production/_ext/1909904406/drv_adc_static.o
- .debug_line    0x000007c1      0xc90 build/milestone1/production/_ext/1864120335/drv_tmr_static.o
- .debug_line    0x00001451      0x4fc build/milestone1/production/_ext/1864120335/drv_tmr_mapping.o
- .debug_line    0x0000194d      0x557 build/milestone1/production/_ext/192191419/drv_usart_mapping.o
- .debug_line    0x00001ea4      0x91d build/milestone1/production/_ext/192191419/drv_usart_static.o
- .debug_line    0x000027c1      0x60d build/milestone1/production/_ext/192191419/drv_usart_static_byte_model.o
- .debug_line    0x00002dce      0x56c build/milestone1/production/_ext/383799649/sys_clk_static.o
- .debug_line    0x0000333a      0x77d build/milestone1/production/_ext/956857457/sys_ports_static.o
- .debug_line    0x00003ab7      0x7e2 build/milestone1/production/_ext/1555642536/system_init.o
- .debug_line    0x00004299      0x6fd build/milestone1/production/_ext/1555642536/system_interrupt.o
- .debug_line    0x00004996      0x291 build/milestone1/production/_ext/1555642536/system_exceptions.o
- .debug_line    0x00004c27      0x4bd build/milestone1/production/_ext/1555642536/system_tasks.o
- .debug_line    0x000050e4      0x1a4 build/milestone1/production/_ext/1555642536/system_interrupt_a.o
- .debug_line    0x00005288      0x13c build/milestone1/production/_ext/1555642536/rtos_hooks.o
- .debug_line    0x000053c4      0x420 build/milestone1/production/_ext/1360937237/app.o
- .debug_line    0x000057e4       0xae build/milestone1/production/_ext/1360937237/main.o
- .debug_line    0x00005892      0x9de build/milestone1/production/_ext/1360937237/navigation.o
- .debug_line    0x00006270      0x971 build/milestone1/production/_ext/1360937237/communication.o
- .debug_line    0x00006be1      0x2fa build/milestone1/production/_ext/1360937237/ms2test.o
- .debug_line    0x00006edb      0x8bb build/milestone1/production/_ext/1360937237/pathfinding.o
- .debug_line    0x00007796      0x3bc build/milestone1/production/_ext/1360937237/flagcapture.o
- .debug_line    0x00007b52      0x25b build/milestone1/production/_ext/1360937237/mapping.o
- .debug_line    0x00007dad      0x247 build/milestone1/production/_ext/1360937237/LED.o
- .debug_line    0x00007ff4     0x26e4 build/milestone1/production/_ext/393803906/drv_i2c.o
- .debug_line    0x0000a6d8      0x2bb build/milestone1/production/_ext/1423261102/osal_freertos.o
- .debug_line    0x0000a993      0x5c6 build/milestone1/production/_ext/2019779704/sys_devcon.o
- .debug_line    0x0000af59      0x471 build/milestone1/production/_ext/2019779704/sys_devcon_pic32mx.o
- .debug_line    0x0000b3ca      0x38c build/milestone1/production/_ext/1620769490/sys_int_pic32.o
- .debug_line    0x0000b756      0x217 build/milestone1/production/_ext/1366647692/heap_1.o
- .debug_line    0x0000b96d      0x23a build/milestone1/production/_ext/1475386849/port.o
- .debug_line    0x0000bba7      0x123 build/milestone1/production/_ext/1475386849/port_asm.o
- .debug_line    0x0000bcca       0x1d build/milestone1/production/_ext/1241959881/croutine.o
- .debug_line    0x0000bce7      0x1dc build/milestone1/production/_ext/1241959881/list.o
- .debug_line    0x0000bec3      0x496 build/milestone1/production/_ext/1241959881/queue.o
- .debug_line    0x0000c359      0x7ba build/milestone1/production/_ext/1241959881/tasks.o
- .debug_line    0x0000cb13       0x1d build/milestone1/production/_ext/1241959881/timers.o
- .debug_line    0x0000cb30      0x325 build/milestone1/production/_ext/1241959881/event_groups.o
- .debug_line    0x0000ce55      0x37b build/milestone1/production/_ext/1360937237/debug.o
- .debug_line    0x0000d1d0      0x6e6 build/milestone1/production/_ext/1360937237/motor.o
- .debug_line    0x0000d8b6      0x4b3 build/milestone1/production/_ext/1360937237/myjson.o
- .debug_line    0x0000dd69      0x2d5 build/milestone1/production/_ext/1360937237/electromagnet.o
- .debug_line    0x0000e03e      0x243 build/milestone1/production/_ext/1360937237/linesensing.o
- .debug_line    0x0000e281      0xbfb build/milestone1/production/_ext/1360937237/myi2c.o
- .debug_line    0x0000ee7c       0x9c c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(floatunsisf.o)
- .debug_line    0x0000ef18       0xa9 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-bootstrap-exception-handler.o)
- .debug_line    0x0000efc1       0x96 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-reset.o)
- .debug_line    0x0000f057       0x9a c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-bootstrap.o)
- .debug_line    0x0000f0f1       0xa8 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(defaultinterrupt.o)
- .debug_line    0x0000f199       0x8b c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_atan2f.o)
- .debug_line    0x0000f224       0x8a c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_sqrtf.o)
- .debug_line    0x0000f2ae       0x88 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(support.o)
- .debug_line    0x0000f336        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(s_lib_ver.o)
- .debug_line    0x0000f336       0x80 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(atoi.o)
- .debug_line    0x0000f3b6        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(ctype.o)
- .debug_line    0x0000f3b6        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(errno.o)
- .debug_line    0x0000f3b6       0x82 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(strcat.o)
- .debug_line    0x0000f438       0x83 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(sprintf_cdnopuxX.eo)
- .debug_line    0x0000f4bb       0x82 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(doprnt_cdnopuxX.eo)
- .debug_line    0x0000f53d       0x81 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_fputc_simple.o)
- .debug_line    0x0000f5be        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_iob.o)
- .debug_line    0x0000f5be       0x82 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_flsbuf_simple.o)
- .debug_line    0x0000f640       0x8b c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(write.o)
- .debug_line    0x0000f6cb       0x8f c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(_mon_putc.o)
- .debug_line    0x0000f75a        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(xc32_uart.o)
- .debug_line    0x0000f75a       0xff c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_udivdi3.o)
- .debug_line    0x0000f859      0x111 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_umoddi3.o)
+ .debug_line    0x00000000      0x7e1 build/milestone1/production/_ext/1909904406/drv_adc_static.o
+ .debug_line    0x000007e1      0xca0 build/milestone1/production/_ext/1864120335/drv_tmr_static.o
+ .debug_line    0x00001481      0x51c build/milestone1/production/_ext/1864120335/drv_tmr_mapping.o
+ .debug_line    0x0000199d      0x587 build/milestone1/production/_ext/192191419/drv_usart_mapping.o
+ .debug_line    0x00001f24      0x93d build/milestone1/production/_ext/192191419/drv_usart_static.o
+ .debug_line    0x00002861      0x62d build/milestone1/production/_ext/192191419/drv_usart_static_byte_model.o
+ .debug_line    0x00002e8e      0x58c build/milestone1/production/_ext/383799649/sys_clk_static.o
+ .debug_line    0x0000341a      0x78d build/milestone1/production/_ext/956857457/sys_ports_static.o
+ .debug_line    0x00003ba7      0x822 build/milestone1/production/_ext/1555642536/system_init.o
+ .debug_line    0x000043c9      0x71d build/milestone1/production/_ext/1555642536/system_interrupt.o
+ .debug_line    0x00004ae6      0x2b1 build/milestone1/production/_ext/1555642536/system_exceptions.o
+ .debug_line    0x00004d97      0x4dd build/milestone1/production/_ext/1555642536/system_tasks.o
+ .debug_line    0x00005274      0x1a4 build/milestone1/production/_ext/1555642536/system_interrupt_a.o
+ .debug_line    0x00005418      0x14c build/milestone1/production/_ext/1555642536/rtos_hooks.o
+ .debug_line    0x00005564      0x440 build/milestone1/production/_ext/1360937237/app.o
+ .debug_line    0x000059a4       0xbe build/milestone1/production/_ext/1360937237/main.o
+ .debug_line    0x00005a62      0xa0e build/milestone1/production/_ext/1360937237/navigation.o
+ .debug_line    0x00006470      0x981 build/milestone1/production/_ext/1360937237/communication.o
+ .debug_line    0x00006df1      0x30a build/milestone1/production/_ext/1360937237/ms2test.o
+ .debug_line    0x000070fb      0x8cb build/milestone1/production/_ext/1360937237/pathfinding.o
+ .debug_line    0x000079c6      0x3cc build/milestone1/production/_ext/1360937237/flagcapture.o
+ .debug_line    0x00007d92      0x26b build/milestone1/production/_ext/1360937237/mapping.o
+ .debug_line    0x00007ffd      0x257 build/milestone1/production/_ext/1360937237/LED.o
+ .debug_line    0x00008254     0x26e4 build/milestone1/production/_ext/393803906/drv_i2c.o
+ .debug_line    0x0000a938      0x2bb build/milestone1/production/_ext/1423261102/osal_freertos.o
+ .debug_line    0x0000abf3      0x5c6 build/milestone1/production/_ext/2019779704/sys_devcon.o
+ .debug_line    0x0000b1b9      0x471 build/milestone1/production/_ext/2019779704/sys_devcon_pic32mx.o
+ .debug_line    0x0000b62a      0x38c build/milestone1/production/_ext/1620769490/sys_int_pic32.o
+ .debug_line    0x0000b9b6      0x217 build/milestone1/production/_ext/1366647692/heap_1.o
+ .debug_line    0x0000bbcd      0x23a build/milestone1/production/_ext/1475386849/port.o
+ .debug_line    0x0000be07      0x123 build/milestone1/production/_ext/1475386849/port_asm.o
+ .debug_line    0x0000bf2a       0x1d build/milestone1/production/_ext/1241959881/croutine.o
+ .debug_line    0x0000bf47      0x1dc build/milestone1/production/_ext/1241959881/list.o
+ .debug_line    0x0000c123      0x496 build/milestone1/production/_ext/1241959881/queue.o
+ .debug_line    0x0000c5b9      0x7ba build/milestone1/production/_ext/1241959881/tasks.o
+ .debug_line    0x0000cd73       0x1d build/milestone1/production/_ext/1241959881/timers.o
+ .debug_line    0x0000cd90      0x325 build/milestone1/production/_ext/1241959881/event_groups.o
+ .debug_line    0x0000d0b5      0x39b build/milestone1/production/_ext/1360937237/debug.o
+ .debug_line    0x0000d450      0x6f6 build/milestone1/production/_ext/1360937237/motor.o
+ .debug_line    0x0000db46      0x4c3 build/milestone1/production/_ext/1360937237/myjson.o
+ .debug_line    0x0000e009      0x2e5 build/milestone1/production/_ext/1360937237/electromagnet.o
+ .debug_line    0x0000e2ee      0x253 build/milestone1/production/_ext/1360937237/linesensing.o
+ .debug_line    0x0000e541      0xc0b build/milestone1/production/_ext/1360937237/myi2c.o
+ .debug_line    0x0000f14c       0x9c c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(floatunsisf.o)
+ .debug_line    0x0000f1e8       0xa9 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-bootstrap-exception-handler.o)
+ .debug_line    0x0000f291       0x96 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-reset.o)
+ .debug_line    0x0000f327       0x9a c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(default-on-bootstrap.o)
+ .debug_line    0x0000f3c1       0xa8 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(defaultinterrupt.o)
+ .debug_line    0x0000f469       0x8b c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_atan2f.o)
+ .debug_line    0x0000f4f4       0x8a c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(w_sqrtf.o)
+ .debug_line    0x0000f57e       0x88 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(support.o)
+ .debug_line    0x0000f606        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libm.a(s_lib_ver.o)
+ .debug_line    0x0000f606       0x80 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(atoi.o)
+ .debug_line    0x0000f686        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(ctype.o)
+ .debug_line    0x0000f686        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(errno.o)
+ .debug_line    0x0000f686       0x82 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(strcat.o)
+ .debug_line    0x0000f708       0x83 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(sprintf_cdnopuxX.eo)
+ .debug_line    0x0000f78b       0x82 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(doprnt_cdnopuxX.eo)
+ .debug_line    0x0000f80d       0x81 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_fputc_simple.o)
+ .debug_line    0x0000f88e        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_iob.o)
+ .debug_line    0x0000f88e       0x82 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libc.a(_flsbuf_simple.o)
+ .debug_line    0x0000f910       0x8b c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(write.o)
+ .debug_line    0x0000f99b       0x8f c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(_mon_putc.o)
+ .debug_line    0x0000fa2a        0x0 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3/../../../../pic32mx/lib\libpic32.a(xc32_uart.o)
+ .debug_line    0x0000fa2a       0xff c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_udivdi3.o)
+ .debug_line    0x0000fb29      0x111 c:/program files (x86)/microchip/xc32/v1.42/bin/bin/../../lib/gcc/pic32mx/4.8.3\libgcc.a(_umoddi3.o)
 
 .debug_frame    0x00000000     0x3424
  *(.debug_frame)

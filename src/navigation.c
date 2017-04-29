@@ -159,7 +159,7 @@ bool DoWeCrossLineQuestionMark(){
             }
             //END TESTING SECTION
             
-            if (ourY >= centerY - 10 && ourX >= 6 && ourX <= (centerWidth - 6)){
+            if (ourY >= centerY - 10 && ourX >= 8 && ourX <= (centerWidth - 8)){
                 locationState = CROSSED_1_LINES;
                 flagRoverEnteredNewZone();
                 return true;

@@ -591,7 +591,7 @@ bool checkIfTwoNodesInSightOfEachOther(point point1, point point2) {
     point roverOffsetPoint1;
     point roverOffsetPoint2;
     
-    unsigned char offset=1;
+    unsigned char offset=2;
     
     //if statement calculates what inverted quadrant the point is in
     if (point1.x > point2.x && point1.y >= point2.y) { //upper left inverted quadrant (I standard quad math))
